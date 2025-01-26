@@ -1,8 +1,8 @@
 <?php
 include 'vendor/autoload.php';
 
-use \PHPePub\Core\EPub;
-use PHPePub\Helpers\CalibreHelper;
+use src\Core\EPub;
+use src\Helpers\CalibreHelper;
 
 error_reporting(E_ALL | E_STRICT);
 ini_set('error_reporting', E_ALL | E_STRICT);

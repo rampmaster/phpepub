@@ -21,18 +21,16 @@
         }
     ],
     "require": {
-        "php": ">=8.1",
+        "php": "^8.2",
         "phpzip/phpzip": "~2.0",
         "grandt/phpresizegif": "~1.0.3",
-        "grandt/relativepath": "~1.0.1"
+        "grandt/relativepath": "~1.0.1",
+        "symfony/uid": "^7.2"
     },
     "autoload": {
         "psr-4": {
-            "PHPePub\\": "src/PHPePub"
-        },
-        "classmap": [
-            "src/lib.uuid.php"
-        ]
+            "Rampmaster\\EPub\\": "src"
+        }
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.68"

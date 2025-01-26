@@ -1,13 +1,13 @@
 <?php
 include 'vendor/autoload.php';
 
-use PHPePub\Core\EPub;
-use PHPePub\Core\EPubChapterSplitter;
-use PHPePub\Core\Logger;
-use PHPePub\Core\Structure\OPF\DublinCore;
-use PHPePub\Helpers\CalibreHelper;
-use PHPePub\Helpers\URLHelper;
 use PHPZip\Zip\File\Zip;
+use src\Core\EPub;
+use src\Core\EPubChapterSplitter;
+use src\Core\Logger;
+use src\Core\Structure\OPF\DublinCore;
+use src\Helpers\CalibreHelper;
+use src\Helpers\URLHelper;
 
 error_reporting(E_ALL | E_STRICT);
 ini_set('error_reporting', E_ALL | E_STRICT);
