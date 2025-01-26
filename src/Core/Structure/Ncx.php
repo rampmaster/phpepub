@@ -360,8 +360,6 @@ class Ncx {
     /**
      * Build the references for the ePub 2 toc.
      * These are merely reference pages added to the end of the navMap though.
-     *
-     * @return string
      */
     public function finalizeReferences() {
         if (isset($this->referencesList) && sizeof($this->referencesList) > 0) {
