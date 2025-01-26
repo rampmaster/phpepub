@@ -23,7 +23,6 @@
     "require": {
         "php": "^8.2",
         "ext-dom": "*",
-        "phpzip/phpzip": "~2.0",
         "grandt/phpresizegif": "~1.0.3",
         "grandt/relativepath": "~1.0.1",
         "symfony/uid": "^7.2",

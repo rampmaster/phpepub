@@ -100,7 +100,7 @@ class StringHelper {
      *
      * @return string with the stripped entities.
      */
-    public static function decodeHtmlEntities($string) {
+    public static function decodeHtmlEntities(string $string) {
         $string = preg_replace('~\s*<br\s*/*\s*>\s*~i', "\n", $string);
         $string = preg_replace('~\s*</(p|div)\s*>\s*~i', "\n\n", $string);
         $string = preg_replace('~<[^>]*>~', '', $string);

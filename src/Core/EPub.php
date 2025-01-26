@@ -327,10 +327,7 @@ class EPub {
             $partCount = 0;
             $this->chapterCount++;
 
-            $oneChapter = each($chapter);
-            while ($oneChapter) {
-                /** @noinspection PhpUnusedLocalVariableInspection */
-                [$k, $v] = $oneChapter;
+            foreach ($chapter as $k => $v) {
                 if ($this->encodeHTML === true) {
                     $v = StringHelper::encodeHtml($v);
                 }
@@ -344,8 +341,6 @@ class EPub {
                 $this->extractIdAttributes($partName, $v);
 
                 $this->opf->addItemRef($partName);
-
-                $oneChapter = each($chapter);
             }
             $partName = $name . "_1." . $extension;
             $navPoint = new NavPoint(StringHelper::decodeHtmlEntities($chapterName), $partName, $partName);
@@ -1025,7 +1020,7 @@ class EPub {
         }
         $fileName = FileHelper::normalizeFileName($fileName);
 
-        if ($this->zip->addLargeFile($filePath, $this->bookRoot . $fileName)) {
+        if ($this->zip->addFile($filePath, $this->bookRoot . $fileName)) {
             $this->fileList[$fileName] = $fileName;
             $this->opf->addItem($fileId, $fileName, $mimetype);
 
@@ -1111,7 +1106,7 @@ class EPub {
      * @return bool|NavPoint The new NavPoint for that level.
      */
     public function subLevel($navTitle = null, $navId = null, $navClass = null, $isNavHidden = false, $writingDirection = null) {
-        return $this->ncx->subLevel(StringHelper::decodeHtmlEntities($navTitle), $navId, $navClass, $isNavHidden, $writingDirection);
+        return $this->ncx->subLevel($navTitle?StringHelper::decodeHtmlEntities($navTitle):$navTitle, $navId, $navClass, $isNavHidden, $writingDirection);
     }
 
     /**
@@ -2253,7 +2248,7 @@ class EPub {
         $fileName = RelativePath::getRelativePath($fileName);
         $fileName = preg_replace('#^[/\.]+#i', "", $fileName);
 
-        $this->zip->addFile($tocData, $this->bookRoot . $fileName);
+        $this->zip->addFromString($this->bookRoot . $fileName, $tocData);
 
         $this->fileList[$fileName] = $fileName;
         $this->opf->addItem("toc", $fileName, "application/xhtml+xml", "nav");

@@ -230,7 +230,7 @@ class ImageHelper {
         $image = FileHelper::getFileContents($imageSource);
         $ratio = 1;
 
-        if ($image !== false && strlen($image) > 0) {
+        if ($image !== false && strlen($image) > 0 && !(BinStringStatic::startsWith(trim($image), '<html')) ) {
             if (BinStringStatic::startsWith(trim($image), '<svg') || (BinStringStatic::startsWith(trim($image), '<?xml') || strpos($image, '<svg') > 0)) {
                 // SVG image.
                 $xml = simplexml_load_string($image);

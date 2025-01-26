@@ -1,5 +1,5 @@
 <?php
-include 'vendor/autoload.php';
+include '../vendor/autoload.php';
 
 use Rampmaster\EPub\Core\EPub;
 use Rampmaster\EPub\Helpers\CalibreHelper;

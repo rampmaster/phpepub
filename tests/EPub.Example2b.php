@@ -1,7 +1,6 @@
 <?php
-include 'vendor/autoload.php';
+include '../vendor/autoload.php';
 
-use PHPZip\Zip\File\Zip;
 use Rampmaster\EPub\Core\EPub;
 use Rampmaster\EPub\Core\EPubChapterSplitter;
 use Rampmaster\EPub\Core\Logger;
@@ -40,7 +39,6 @@ $fileDir = './PHPePub';
 $book = new EPub(); // Default is EPub::BOOK_VERSION_EPUB2
 $log->logLine("new EPub()");
 $log->logLine("EPub class version.: " . EPub::VERSION);
-$log->logLine("Zip version........: " . Zip::VERSION);
 $log->logLine("getCurrentServerURL: " . URLHelper::getCurrentServerURL());
 $log->logLine("getCurrentPageURL..: " . URLHelper::getCurrentPageURL());
 
@@ -233,7 +231,7 @@ $html2 = $splitter->splitChapter($chapter5, true, "Chapter ");/* '#^<.+?>Chapter
 $log->logLine("Split chapter 5");
 
 $idx = 0;
-while (list($k, $v) = each($html2)) {
+foreach($html2 as $k => $v) {
     $idx++;
     // Because we used a string search in the splitter, the returned hits are put in the key part of the array.
     // The entire HTML tag of the line matching the chapter search.

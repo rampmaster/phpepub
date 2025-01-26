@@ -1,7 +1,6 @@
 <?php
-include 'vendor/autoload.php';
+include '../vendor/autoload.php';
 
-use PHPZip\Zip\File\Zip;
 use Rampmaster\EPub\Core\EPub;
 use Rampmaster\EPub\Core\Logger;
 use Rampmaster\EPub\Core\Structure\OPF\DublinCore;
@@ -39,7 +38,6 @@ $fileDir = './PHPePub';
 $book = new EPub(EPub::BOOK_VERSION_EPUB3, "en", EPub::DIRECTION_LEFT_TO_RIGHT); // Default is ePub 2
 $log->logLine("new EPub()");
 $log->logLine("EPub class version.: " . EPub::VERSION);
-$log->logLine("Zip version........: " . Zip::VERSION);
 $log->logLine("getCurrentServerURL: " . URLHelper::getCurrentServerURL());
 $log->logLine("getCurrentPageURL..: " . URLHelper::getCurrentPageURL());
 
