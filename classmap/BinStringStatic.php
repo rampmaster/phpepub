@@ -9,7 +9,7 @@
  * @copyright 2014 A. Grandt
  * @license GNU LGPL 2.1
  */
-namespace com\grandt;
+namespace Grandt;
 
 class BinStringStatic {
     const VERSION = 1.00;

@@ -1,7 +1,7 @@
 <?php
 namespace Rampmaster\EPub\Core\Structure;
 
-use com\grandt\BinStringStatic;
+use Grandt\BinStringStatic;
 use Rampmaster\EPub\Core\EPub;
 use Rampmaster\EPub\Core\Structure\OPF\DublinCore;
 use Rampmaster\EPub\Core\Structure\OPF\Guide;

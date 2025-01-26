@@ -26,14 +26,15 @@
         "phpzip/phpzip": "~2.0",
         "grandt/phpresizegif": "~1.0.3",
         "grandt/relativepath": "~1.0.1",
-        "symfony/uid": "^7.2"
+        "symfony/uid": "^7.2",
+        "nelexa/zip": "^4.0"
     },
     "autoload": {
         "psr-4": {
             "Rampmaster\\EPub\\": "src"
         },
         "classmap": [
-            "classmap\\BinStringStatic.php"
+            "classmap//BinStringStatic.php"
         ]
     },
     "require-dev": {

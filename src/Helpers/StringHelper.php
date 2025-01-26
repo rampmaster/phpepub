@@ -11,7 +11,7 @@
 namespace Rampmaster\EPub\Helpers;
 
 
-use com\grandt\BinStringStatic;
+use Grandt\BinStringStatic;
 use DOMDocument;
 use DOMNode;
 use Rampmaster\EPub\Core\StaticData;

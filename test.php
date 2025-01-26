@@ -68,4 +68,4 @@ $book->addChapter(
     $content_start . "<h1>Epilogue</h1>\n<p>Plenty of test content</p>\n" . $content_end
 );
 $book->finalize();
-$zipData = $book->sendBook("ExampleBook1_test");
+$zipData = $book->sendBook("ExampleBook1_test2");

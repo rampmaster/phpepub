@@ -10,7 +10,7 @@
 
 namespace Rampmaster\EPub\Helpers;
 
-use com\grandt\BinStringStatic;
+use Grandt\BinStringStatic;
 use grandt\ResizeGif\ResizeGif;
 use SimpleXMLElement;
 use Rampmaster\EPub\Core\EPub;

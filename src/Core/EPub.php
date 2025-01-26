@@ -1,7 +1,7 @@
 <?php
 namespace Rampmaster\EPub\Core;
 
-use com\grandt\BinStringStatic;
+use Grandt\BinStringStatic;
 use DOMDocument;
 use DOMXPath;
 use PHPZip\Zip\File\Zip;
@@ -98,7 +98,7 @@ class EPub {
 
     private $bookVersion = EPub::BOOK_VERSION_EPUB2;
 
-    /** @var $Zip Zip */
+    /** @var $Zip \PhpZip\ZipFile */
     private $zip;
 
     private $title = '';
@@ -233,11 +233,9 @@ class EPub {
 
         $this->docRoot = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT') . '/';
 
-        $this->zip = new Zip();
-        $this->zip->setExtraField(false);
-        $this->zip->addFile('application/epub+zip', 'mimetype');
-        $this->zip->setExtraField(true);
-        $this->zip->addDirectory('META-INF');
+        $this->zip = new \PhpZip\ZipFile();
+        $this->zip->addFromString('mimetype', 'application/epub+zip');
+        $this->zip->addEmptyDir('META-INF');
 
         $this->ncx = new Ncx(null, null, null, $this->languageCode, $this->writingDirection);
         $this->opf = new Opf();
@@ -678,7 +676,7 @@ class EPub {
         }
         $fileName = FileHelper::normalizeFileName($fileName);
 
-        $this->zip->addFile($fileData, "META-INF/" . $fileName);
+        $this->zip->addFromString("META-INF/" . $fileName, $fileData);
 
         return true;
     }
@@ -704,7 +702,7 @@ class EPub {
 
         $compress = (strpos($mimetype, "image/") !== 0);
 
-        $this->zip->addFile($fileData, $this->bookRoot . $fileName, 0, null, $compress);
+        $this->zip->addFromString($this->bookRoot . $fileName, $fileData);
         $this->fileList[$fileName] = $fileName;
         $this->opf->addItem($fileId, $fileName, $mimetype);
 
@@ -1062,7 +1060,7 @@ class EPub {
 
         $content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\n\t<rootfiles>\n\t\t<rootfile full-path=\"" . $this->bookRoot . "book.opf\" media-type=\"application/oebps-package+xml\" />\n\t</rootfiles>\n</container>\n";
 
-        $this->zip->addFile($content, "META-INF/container.xml", 0, null, false);
+        $this->zip->addFromString("META-INF/container.xml", $content);
         $this->ncx->setVersion($this->bookVersion);
         $this->opf->setVersion($this->bookVersion);
         $this->opf->addItem("ncx", "book.ncx", Ncx::MIMETYPE);
@@ -2131,15 +2129,15 @@ class EPub {
         $ncxFinal = StringHelper::fixEncoding($this->ncx->finalize());
 
         if (mb_detect_encoding($opfFinal, 'UTF-8', true) === "UTF-8") {
-            $this->zip->addFile($opfFinal, $this->bookRoot . "book.opf");
+            $this->zip->addFromString($this->bookRoot . "book.opf", $opfFinal);
         } else {
-            $this->zip->addFile(mb_convert_encoding($opfFinal, "UTF-8"), $this->bookRoot . "book.opf");
+            $this->zip->addFromString($this->bookRoot . "book.opf", mb_convert_encoding($opfFinal, "UTF-8"));
         }
 
         if (mb_detect_encoding($ncxFinal, 'UTF-8', true) === "UTF-8") {
-            $this->zip->addFile($ncxFinal, $this->bookRoot . "book.ncx");
+            $this->zip->addFromString($this->bookRoot . "book.ncx", $ncxFinal);
         } else {
-            $this->zip->addFile(mb_convert_encoding($ncxFinal, "UTF-8"), $this->bookRoot . "book.ncx");
+            $this->zip->addFromString($this->bookRoot . "book.ncx", mb_convert_encoding($ncxFinal, "UTF-8"));
         }
 
         $this->opf = null;
@@ -2322,7 +2320,8 @@ class EPub {
             $fileName .= ".epub";
         }
 
-        if (true === $this->zip->sendZip($fileName, "application/epub+zip")) {
+        //TODO: Implementar salida como stream ->outputAsAttachment($fileName, "application/epub+zip")
+        if (true === $this->zip->saveAsFile($fileName)) {
             return $fileName;
         }
 
