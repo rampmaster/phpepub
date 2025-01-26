@@ -50,6 +50,7 @@ $fileDir = '.';
 // setting timezone for time functions used for logging to work properly
 date_default_timezone_set('Europe/Berlin');
 
+//TODO: Check Gif Resize
 $chapter = $content_start . "<p><img src='demo/512x700_g1.gif' alt='Image' /></p>\n"
         . "<p><img src='demo/rxhVVUP.gif' alt='Animated Gif' /></p>\n"
         . "<p><img src='demo/512x700_2.jpg' alt='none' /></p>\n"

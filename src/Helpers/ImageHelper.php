@@ -11,7 +11,6 @@
 namespace Rampmaster\EPub\Helpers;
 
 use Grandt\BinStringStatic;
-use grandt\ResizeGif\ResizeGif;
 use SimpleXMLElement;
 use Rampmaster\EPub\Core\EPub;
 
@@ -303,7 +302,8 @@ class ImageHelper {
 
                         $tFileD = tempnam("BewareOfGeeksBearingGifs", "grD");
 
-                        ResizeGif::ResizeByRatio($imageSource, $tFileD, $ratio);
+                        //TODO: Replace ResizeGif Function
+                        //ResizeGif::ResizeByRatio($imageSource, $tFileD, $ratio);
                         $image = file_get_contents($tFileD);
                         unlink($tFileD);
                     } else {
