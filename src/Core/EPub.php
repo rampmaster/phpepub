@@ -5,7 +5,7 @@ use Grandt\BinStringStatic;
 use DOMDocument;
 use DOMXPath;
 use PHPZip\Zip\File\Zip;
-use RelativePath;
+use Grandt\RelativePath;
 use Rampmaster\EPub\Core\Structure\Ncx;
 use Rampmaster\EPub\Core\Structure\NCX\NavPoint;
 use Rampmaster\EPub\Core\Structure\Opf;

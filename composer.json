@@ -10,7 +10,7 @@
         {
             "name": "A. Grandt",
             "email": "php@grandt.com",
-            "homepage": "http://grandt.com",
+            "homepage": "https://grandt.com",
             "role": "Developer"
         },
         {
@@ -24,7 +24,6 @@
         "php": "^8.2",
         "ext-dom": "*",
         "grandt/phpresizegif": "~1.0.3",
-        "grandt/relativepath": "~1.0.1",
         "symfony/uid": "^7.2",
         "nelexa/zip": "^4.0"
     },
@@ -34,7 +33,8 @@
             "Rampmaster\\EPub\\Test\\": "tests"
         },
         "classmap": [
-            "classmap//BinStringStatic.php"
+            "classmap//BinStringStatic.php",
+            "classmap//RelativePath.php"
         ]
     },
     "require-dev": {

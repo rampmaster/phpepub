@@ -11,7 +11,7 @@
 namespace Rampmaster\EPub\Helpers;
 
 
-use RelativePath;
+use Grandt\RelativePath;
 use Rampmaster\EPub\Core\EPub;
 use Rampmaster\EPub\Core\StaticData;
 
