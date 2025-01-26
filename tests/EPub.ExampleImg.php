@@ -1,8 +1,8 @@
 <?php
 include 'vendor/autoload.php';
 
-use src\Core\EPub;
-use src\Helpers\CalibreHelper;
+use Rampmaster\EPub\Core\EPub;
+use Rampmaster\EPub\Helpers\CalibreHelper;
 
 error_reporting(E_ALL | E_STRICT);
 ini_set('error_reporting', E_ALL | E_STRICT);

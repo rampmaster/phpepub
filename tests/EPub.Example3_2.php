@@ -2,11 +2,11 @@
 include 'vendor/autoload.php';
 
 use PHPZip\Zip\File\Zip;
-use src\Core\EPub;
-use src\Core\Logger;
-use src\Core\Structure\OPF\DublinCore;
-use src\Helpers\CalibreHelper;
-use src\Helpers\URLHelper;
+use Rampmaster\EPub\Core\EPub;
+use Rampmaster\EPub\Core\Logger;
+use Rampmaster\EPub\Core\Structure\OPF\DublinCore;
+use Rampmaster\EPub\Helpers\CalibreHelper;
+use Rampmaster\EPub\Helpers\URLHelper;
 
 error_reporting(E_ALL | E_STRICT);
 ini_set('error_reporting', E_ALL | E_STRICT);
