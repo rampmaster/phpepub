@@ -11,7 +11,7 @@
 namespace Rampmaster\EPub\Helpers;
 
 
-use src\Core\StaticData;
+use Rampmaster\EPub\Core\StaticData;
 
 class MimeHelper {
     /**

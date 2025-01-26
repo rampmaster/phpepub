@@ -1,7 +1,7 @@
 <?php
 namespace Rampmaster\EPub\Helpers\Rendition;
 
-use src\Core\EPub;
+use Rampmaster\EPub\Core\EPub;
 
 /**
  * Helper for Rendition ePub3 extensions.

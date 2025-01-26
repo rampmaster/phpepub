@@ -1,9 +1,9 @@
 <?php
 namespace Rampmaster\EPub\Core\Structure;
 
-use src\Core\EPub;
-use src\Core\Structure\NCX\NavMap;
-use src\Core\Structure\NCX\NavPoint;
+use Rampmaster\EPub\Core\EPub;
+use Rampmaster\EPub\Core\Structure\NCX\NavMap;
+use Rampmaster\EPub\Core\Structure\NCX\NavPoint;
 
 /**
  * ePub NCX file structure
@@ -367,7 +367,7 @@ class Ncx {
             $this->rootLevel();
             $this->subLevel($this->referencesTitle, $this->referencesId, $this->referencesClass);
             $refId = 1;
-            while ([$item, $descriptive] = each($this->referencesOrder)) {
+            foreach($this->referencesOrder as $item => $descriptive){
                 if (array_key_exists($item, $this->referencesList)) {
                     $name = (empty($this->referencesName[$item]) ? $descriptive : $this->referencesName[$item]);
                     $navPoint = new NavPoint($name, $this->referencesList[$item], "ref-" . $refId++);

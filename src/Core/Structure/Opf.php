@@ -2,16 +2,16 @@
 namespace Rampmaster\EPub\Core\Structure;
 
 use com\grandt\BinStringStatic;
-use src\Core\EPub;
-use src\Core\Structure\OPF\DublinCore;
-use src\Core\Structure\OPF\Guide;
-use src\Core\Structure\OPF\Item;
-use src\Core\Structure\OPF\Itemref;
-use src\Core\Structure\OPF\Manifest;
-use src\Core\Structure\OPF\Metadata;
-use src\Core\Structure\OPF\MetaValue;
-use src\Core\Structure\OPF\Reference;
-use src\Core\Structure\OPF\Spine;
+use Rampmaster\EPub\Core\EPub;
+use Rampmaster\EPub\Core\Structure\OPF\DublinCore;
+use Rampmaster\EPub\Core\Structure\OPF\Guide;
+use Rampmaster\EPub\Core\Structure\OPF\Item;
+use Rampmaster\EPub\Core\Structure\OPF\Itemref;
+use Rampmaster\EPub\Core\Structure\OPF\Manifest;
+use Rampmaster\EPub\Core\Structure\OPF\Metadata;
+use Rampmaster\EPub\Core\Structure\OPF\MetaValue;
+use Rampmaster\EPub\Core\Structure\OPF\Reference;
+use Rampmaster\EPub\Core\Structure\OPF\Spine;
 
 /**
  * ePub OPF file structure

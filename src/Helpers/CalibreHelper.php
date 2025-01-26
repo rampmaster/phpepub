@@ -11,7 +11,7 @@
 namespace Rampmaster\EPub\Helpers;
 
 
-use src\Core\EPub;
+use Rampmaster\EPub\Core\EPub;
 
 class CalibreHelper {
     /**

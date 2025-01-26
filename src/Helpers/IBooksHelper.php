@@ -1,8 +1,8 @@
 <?php
 namespace Rampmaster\EPub\Helpers;
 
-use src\Core\EPub;
-use src\Helpers\enums\Boolean;
+use Rampmaster\EPub\Core\EPub;
+use Rampmaster\EPub\Helpers\enums\Boolean;
 
 /*
     <display_options>

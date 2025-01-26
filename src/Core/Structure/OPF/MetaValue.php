@@ -1,7 +1,7 @@
 <?php
 namespace Rampmaster\EPub\Core\Structure\OPF;
 
-use src\Core\EPub;
+use Rampmaster\EPub\Core\EPub;
 
 /**
  * ePub OPF Metadata value structures
@@ -100,13 +100,13 @@ class MetaValue {
         $dc = "\t\t<" . $this->tagName;
 
         if (sizeof($this->attr) > 0) {
-            while ([$name, $content] = each($this->attr)) {
+            foreach ($this->attr as $name => $content) {
                 $dc .= " " . $name . "=\"" . $content . "\"";
             }
         }
 
         if ($bookVersion === EPub::BOOK_VERSION_EPUB2 && sizeof($this->opfAttr) > 0) {
-            while ([$name, $content] = each($this->opfAttr)) {
+            foreach ($this->opfAttr as $name => $content) {
                 $dc .= " opf:" . $name . "=\"" . $content . "\"";
             }
         }

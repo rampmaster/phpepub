@@ -1,8 +1,8 @@
 <?php
 namespace Rampmaster\EPub\Core\Structure\OPF;
 
-use src\Core\EPub;
-use src\Core\StaticData;
+use Rampmaster\EPub\Core\EPub;
+use Rampmaster\EPub\Core\StaticData;
 
 /**
  * ePub OPF Metadata structures
@@ -125,12 +125,15 @@ class Metadata {
         }
 
         foreach ($this->metaProperties as $data) {
-            [$name, $content] = each($data);
+            $name = array_key_first($data);
+            $content = $data[$name];
+
             $metadata .= "\t\t<meta property=\"" . $name . "\">" . $content . "</meta>\n";
         }
 
         foreach ($this->meta as $data) {
-            [$name, $content] = each($data);
+            $name = array_key_first($data);
+            $content = $data[$name];
             $metadata .= "\t\t<meta name=\"" . $name . "\" content=\"" . $content . "\" />\n";
         }
 

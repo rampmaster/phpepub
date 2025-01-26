@@ -2,7 +2,7 @@
 
 namespace Rampmaster\EPub\Core\Structure\NCX;
 
-use src\Core\EPub;
+use Rampmaster\EPub\Core\EPub;
 
 /**
  * ePub NavPoint class

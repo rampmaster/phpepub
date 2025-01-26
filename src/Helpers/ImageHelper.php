@@ -13,7 +13,7 @@ namespace Rampmaster\EPub\Helpers;
 use com\grandt\BinStringStatic;
 use grandt\ResizeGif\ResizeGif;
 use SimpleXMLElement;
-use src\Core\EPub;
+use Rampmaster\EPub\Core\EPub;
 
 class ImageHelper {
     protected static $isGdInstalled = null;

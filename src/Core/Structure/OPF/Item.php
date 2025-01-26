@@ -1,7 +1,7 @@
 <?php
 namespace Rampmaster\EPub\Core\Structure\OPF;
 
-use src\Core\EPub;
+use Rampmaster\EPub\Core\EPub;
 
 /**
  * ePub OPF Item structure

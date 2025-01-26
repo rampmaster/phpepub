@@ -6,19 +6,19 @@ use DOMDocument;
 use DOMXPath;
 use PHPZip\Zip\File\Zip;
 use RelativePath;
-use src\Core\Structure\Ncx;
-use src\Core\Structure\NCX\NavPoint;
-use src\Core\Structure\Opf;
-use src\Core\Structure\OPF\DublinCore;
-use src\Core\Structure\OPF\Item;
-use src\Core\Structure\OPF\MarcCode;
-use src\Core\Structure\OPF\MetaValue;
-use src\Core\Structure\OPF\Reference;
-use src\Helpers\FileHelper;
-use src\Helpers\ImageHelper;
-use src\Helpers\MimeHelper;
-use src\Helpers\StringHelper;
-use src\Helpers\URLHelper;
+use Rampmaster\EPub\Core\Structure\Ncx;
+use Rampmaster\EPub\Core\Structure\NCX\NavPoint;
+use Rampmaster\EPub\Core\Structure\Opf;
+use Rampmaster\EPub\Core\Structure\OPF\DublinCore;
+use Rampmaster\EPub\Core\Structure\OPF\Item;
+use Rampmaster\EPub\Core\Structure\OPF\MarcCode;
+use Rampmaster\EPub\Core\Structure\OPF\MetaValue;
+use Rampmaster\EPub\Core\Structure\OPF\Reference;
+use Rampmaster\EPub\Helpers\FileHelper;
+use Rampmaster\EPub\Helpers\ImageHelper;
+use Rampmaster\EPub\Helpers\MimeHelper;
+use Rampmaster\EPub\Helpers\StringHelper;
+use Rampmaster\EPub\Helpers\URLHelper;
 
 
 /**
@@ -2104,7 +2104,10 @@ class EPub {
         }
 
         reset($this->ncx->chapterList);
-        [$firstChapterName, $firstChapterNavPoint] = each($this->ncx->chapterList);
+
+        $firstChapterName = array_key_first($this->ncx->chapterList);
+        $firstChapterNavPoint = $this->ncx->chapterList[$firstChapterName];
+
         /** @var $firstChapterNavPoint NavPoint */
         $firstChapterFileName = $firstChapterNavPoint->getContentSrc();
         $this->opf->addReference(Reference::TEXT, StringHelper::decodeHtmlEntities($firstChapterName), $firstChapterFileName);
@@ -2202,9 +2205,9 @@ class EPub {
         }
         $tocData .= ">\n";
 
-        while ([$item, $descriptive] = each($this->referencesOrder)) {
+        foreach ($this->referencesOrder as $item => $descriptive) {
             if ($item === "text") {
-                while ([$chapterName, $navPoint] = each($this->ncx->chapterList)) {
+                foreach ($this->ncx->chapterList as $chapterName => $navPoint) {
                     /** @var $navPoint NavPoint */
                     $fileName = $navPoint->getContentSrc();
                     $level = $navPoint->getLevel() - 2;

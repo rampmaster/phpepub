@@ -12,8 +12,8 @@ namespace Rampmaster\EPub\Helpers;
 
 
 use RelativePath;
-use src\Core\EPub;
-use src\Core\StaticData;
+use Rampmaster\EPub\Core\EPub;
+use Rampmaster\EPub\Core\StaticData;
 
 class FileHelper {
     protected static $isCurlInstalled;

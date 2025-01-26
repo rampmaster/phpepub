@@ -1,7 +1,7 @@
 <?php
 namespace Rampmaster\EPub\Helpers\enums;
 
-use src\Helpers\Enum;
+use Rampmaster\EPub\Helpers\Enum;
 
 /**
  * Why this enum? Have you never made a typo like treu or flase in 'boolean' text parameters?

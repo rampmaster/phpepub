@@ -14,7 +14,7 @@ namespace Rampmaster\EPub\Helpers;
 use com\grandt\BinStringStatic;
 use DOMDocument;
 use DOMNode;
-use src\Core\StaticData;
+use Rampmaster\EPub\Core\StaticData;
 use Symfony\Component\Uid\Uuid;
 
 class StringHelper {
@@ -33,7 +33,7 @@ class StringHelper {
         if (mb_detect_encoding($in_str) == "UTF-8" && mb_check_encoding($in_str, "UTF-8")) {
             return $in_str;
         } else {
-            return utf8_encode($in_str);
+            return mb_convert_encoding($in_str, 'UTF-8', 'ISO-8859-1');
         }
     }
 
