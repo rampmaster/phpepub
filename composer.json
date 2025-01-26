@@ -31,7 +31,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Rampmaster\\EPub\\": "src"
+            "Rampmaster\\EPub\\": "src",
+            "Rampmaster\\EPub\\Test\\": "tests"
         },
         "classmap": [
             "classmap//BinStringStatic.php"
