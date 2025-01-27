@@ -11,9 +11,9 @@
 namespace Rampmaster\EPub\Helpers;
 
 
-use Grandt\RelativePath;
 use Rampmaster\EPub\Core\EPub;
 use Rampmaster\EPub\Core\StaticData;
+use Symfony\Component\Filesystem\Path;
 
 class FileHelper {
     protected static $isCurlInstalled;
@@ -145,6 +145,6 @@ class FileHelper {
      * @return string normalized filename
      */
     public static function normalizeFileName($fileName) {
-        return preg_replace('#^[/\.]+#i', "", RelativePath::getRelativePath($fileName));
+        return preg_replace('#^[/\.]+#i', "", Path::canonicalize($fileName));
     }
 }

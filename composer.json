@@ -24,7 +24,8 @@
         "php": "^8.2",
         "ext-dom": "*",
         "symfony/uid": "^7.2",
-        "nelexa/zip": "^4.0"
+        "nelexa/zip": "^4.0",
+        "symfony/filesystem": "^7.2"
     },
     "autoload": {
         "psr-4": {
@@ -32,8 +33,7 @@
             "Rampmaster\\EPub\\Test\\": "tests"
         },
         "classmap": [
-            "classmap//BinStringStatic.php",
-            "classmap//RelativePath.php"
+            "classmap//BinStringStatic.php"
         ]
     },
     "require-dev": {

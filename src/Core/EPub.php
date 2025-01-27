@@ -4,8 +4,6 @@ namespace Rampmaster\EPub\Core;
 use Grandt\BinStringStatic;
 use DOMDocument;
 use DOMXPath;
-use PHPZip\Zip\File\Zip;
-use Grandt\RelativePath;
 use Rampmaster\EPub\Core\Structure\Ncx;
 use Rampmaster\EPub\Core\Structure\NCX\NavPoint;
 use Rampmaster\EPub\Core\Structure\Opf;
@@ -19,6 +17,7 @@ use Rampmaster\EPub\Helpers\ImageHelper;
 use Rampmaster\EPub\Helpers\MimeHelper;
 use Rampmaster\EPub\Helpers\StringHelper;
 use Rampmaster\EPub\Helpers\URLHelper;
+use Symfony\Component\Filesystem\Path;
 
 
 /**
@@ -283,7 +282,7 @@ class EPub {
         if ($this->isFinalized) {
             return false;
         }
-        $fileName = RelativePath::getRelativePath($fileName);
+        $fileName = Path::canonicalize($fileName);
         $fileName = preg_replace('#^[/\.]+#i', "", $fileName);
         $navPoint = false;
 
@@ -641,7 +640,7 @@ class EPub {
             if (!empty($imageData['ext']) && (!isset($iSrcInfo['extension']) || $imageData['ext'] != $iSrcInfo['extension'])) {
                 $internalSrc = $iSrcInfo['filename'] . "." . $imageData['ext'];
             }
-            $internalPath = RelativePath::getRelativePath("images/" . $internalPath . "/" . $internalSrc);
+            $internalPath = Path::canonicalize("images/" . $internalPath . "/" . $internalSrc);
             if (!array_key_exists($internalPath, $this->fileList)) {
                 $this->addFile($internalPath, "i_" . $internalSrc, $imageData['image'], $imageData['mime']);
                 $this->fileList[$internalPath] = $source;
@@ -786,7 +785,7 @@ class EPub {
         if ($this->isFinalized || array_key_exists($fileName, $this->fileList)) {
             return false;
         }
-        $fileName = RelativePath::getRelativePath($fileName);
+        $fileName = Path::canonicalize($fileName);
         $fileName = preg_replace('#^[/\.]+#i', "", $fileName);
 
         if ($externalReferences !== EPub::EXTERNAL_REF_IGNORE) {
@@ -984,7 +983,7 @@ class EPub {
 
         if ($mediaPath !== false) {
             $mime = MimeHelper::getMimeTypeFromExtension(pathinfo($source, PATHINFO_EXTENSION));
-            $internalPath = RelativePath::getRelativePath("media/" . $internalPath . "/" . $internalSrc);
+            $internalPath = Path::canonicalize("media/" . $internalPath . "/" . $internalSrc);
 
             if (!array_key_exists($internalPath, $this->fileList) &&
                 $this->addLargeFile($internalPath, "m_" . $internalSrc, $mediaPath, $mime)
@@ -1361,7 +1360,7 @@ class EPub {
         if ($this->isFinalized) {
             return false;
         }
-        $fileName = RelativePath::getRelativePath($fileName);
+        $fileName = Path::canonicalize($fileName);
         $fileName = preg_replace('#^[/\.]+#i', "", $fileName);
 
         if (!empty($pageData) && is_string($pageData)) {
@@ -2245,7 +2244,7 @@ class EPub {
             $this->initialize();
         }
 
-        $fileName = RelativePath::getRelativePath($fileName);
+        $fileName = Path::canonicalize($fileName);
         $fileName = preg_replace('#^[/\.]+#i', "", $fileName);
 
         $this->zip->addFromString($this->bookRoot . $fileName, $tocData);
