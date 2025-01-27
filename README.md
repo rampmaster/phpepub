@@ -64,6 +64,28 @@ Finally, you include the `autoload.php` file in the new `vendor` directory.
     .
 ```
 
+## EPub class documentation
+This class has been designed for ease of use, and to enable ePub book creation on the fly.
+
+The ePub standard contains a lot of parameters that can be set by the user, but in this implementation we are only relying on some of them, the important ones so to speak.
+
+### Mandatory Fields:
+* Title: setTitle(\$title), where \$title is a text string.
+* Language: setLanguage(\$language), where \$language is a RFC3066 Language code, such as "en", "da", "fr" etc. Language is "en" by default.
+* Identifier: setIdentifier(\$identifier, \$identifierType), where both arguments are text strings. The \$identifier should be unique for the book. If you don't have anything unique you can use the _createUUID_ function mentioned later in the documentation.
+  * The \$identifierType must be one of these:
+    * "EPub::IDENTIFIER_URI": When using the page URL as \$identifier.
+    * "EPub::IDENTIFIER_ISBN": Usually used for published books, where the books unique ISBN number are available.
+    * "EPub::IDENTIFIER_UUID": A generated or random UUID string on the form c5bc871d-a20a-fc48-ccb4-bb134ae6c564
+
+### Optional Fields:
+* Description: A book description or synopsis
+* Author: Book author or creator. setAuthor(\$author, \$authorSortKey) has two arguments, where the sort key can be left blank with ''. The \$authorSortKey is basically how the name is to be sorted, usually it's "Lastname, First names" where the $author is the straight "Firstnames Lastname"
+* Publisher: Book publisher Information, use setPublisher($publisherName, $publisherURL) to set the name and URL of the publisher.
+* Date: The publishing date of the book, as a timestamp. If left blank the current date/time will be used.
+* Rights: Text string with the licence and copyrights that may apply to the book.
+* Source URL: The web address for the book, if any are available, but this eBook must be downloadable from somewhere. This is usually also the address used as an identifier, if that parameter is using the "URI" identifier type. 
+
 ## TODO:
 * The goal being to encompass the majority of the features in the ePub 2.0 and 3.0 specifications, except the Daisy type files.
 * Add better handling of Reference structures.

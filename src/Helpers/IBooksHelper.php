@@ -2,7 +2,7 @@
 namespace Rampmaster\EPub\Helpers;
 
 use Rampmaster\EPub\Core\EPub;
-use Rampmaster\EPub\Helpers\enums\Boolean;
+use Rampmaster\EPub\Helpers\Enums\Boolean;
 
 /*
     <display_options>
