@@ -28,8 +28,8 @@
     "ext-dom": "*",
     "ext-zip": "*",
     "symfony/uid": "^7.2",
-    "nelexa/zip": "^4.0",
-    "symfony/filesystem": "^7.2"
+    "symfony/filesystem": "^7.2",
+    "symfony/process": "^8.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",

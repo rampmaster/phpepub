@@ -97,8 +97,10 @@ class EPub {
 
     private $bookVersion = EPub::BOOK_VERSION_EPUB2;
 
-    /** @var $Zip \PhpZip\ZipFile */
+    /** @var $Zip \ZipArchive */
     private $zip;
+    /** @var string Path to temporary zip file used during generation */
+    private $zipPath;
 
     private $title = '';
 
@@ -232,8 +234,21 @@ class EPub {
 
         $this->docRoot = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT') . '/';
 
-        $this->zip = new \PhpZip\ZipFile();
+        // Initialize native ZipArchive backed by a temporary file.
+        $this->zipPath = tempnam(sys_get_temp_dir(), 'epub_');
+        if ($this->zipPath === false) {
+            throw new \RuntimeException('Unable to create temporary file for epub zip');
+        }
+        $this->zip = new \ZipArchive();
+        if ($this->zip->open($this->zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            throw new \RuntimeException('Unable to open temporary zip archive');
+        }
+        // Add mimetype as the first entry and store it uncompressed (required by EPUB spec)
         $this->zip->addFromString('mimetype', 'application/epub+zip');
+        // Attempt to set storage (no compression) for the mimetype entry. If not supported, ignore.
+        if (defined('ZipArchive::CM_STORE')) {
+            @\$this->zip->setCompressionName('mimetype', ZipArchive::CM_STORE);
+        }
         $this->zip->addEmptyDir('META-INF');
 
         $this->ncx = new Ncx(null, null, null, $this->languageCode, $this->writingDirection);
@@ -1027,6 +1042,11 @@ class EPub {
         }
         $fileName = FileHelper::normalizeFileName($fileName);
 
+        if (!is_file($filePath)) {
+            return false;
+        }
+
+        // Use native ZipArchive addFile
         if ($this->zip->addFile($filePath, $this->bookRoot . $fileName)) {
             $this->fileList[$fileName] = $fileName;
             $this->opf->addItem($fileId, $fileName, $mimetype);
@@ -2276,194 +2296,5 @@ class EPub {
         $this->ncx->setDocTitle(StringHelper::decodeHtmlEntities($this->title));
 
         return $this->ncx->finalizeEPub3($title, $cssFileName);
-    }
-    
-    /**
-     * Return the finalized book.
-     *
-     * @return string with the book in binary form.
-     */
-    public function getBook() {
-        if (!$this->isFinalized) {
-            $this->finalize();
-        }
-
-        // Use a temporary file and save the zip there; some implementations of
-        // saveAsStream may close or alter the stream passed, so saveAsFile is safer.
-        $tmp = tempnam(sys_get_temp_dir(), 'epub_');
-        if ($tmp === false) {
-            throw new \RuntimeException('Unable to create temporary file for zip output');
-        }
-
-        try {
-            $this->zip->saveAsFile($tmp);
-            $data = file_get_contents($tmp);
-            if ($data === false) {
-                throw new \RuntimeException('Unable to read temporary epub file');
-            }
-            return $data;
-        } finally {
-            @unlink($tmp);
-        }
-    }
-
-    /**
-     * Return the finalized book size.
-     *
-     * @return string
-     */
-    public function getBookSize() {
-        if (!$this->isFinalized) {
-            $this->finalize();
-        }
-
-        return $this->zip->getArchiveSize();
-    }
-
-    /**
-     * Send the book as a zip download
-     *
-     * Sending will fail if the output buffer is in use. You can override this limit by
-     *  calling setIgnoreEmptyBuffer(TRUE), though the function will still fail if that
-     *  buffer is not empty.
-     *
-     * @param string $fileName The name of the book without the .epub at the end.
-     *
-     * @return string|bool The sent file name if successful, FALSE if it failed.
-     */
-    public function sendBook($fileName) {
-        if (!$this->isFinalized) {
-            $this->finalize();
-        }
-
-        if (!BinStringStatic::endsWith($fileName, ".epub")) {
-            $fileName .= ".epub";
-        }
-
-        //TODO: Implementar salida como stream ->outputAsAttachment($fileName, "application/epub+zip")
-        if (true === $this->zip->saveAsFile($fileName)) {
-            return $fileName;
-        }
-
-        return false;
-    }
-    
-    /**
-     * Retrieve an array of file names currently added to the book.
-     * $key is the filename used in the book
-     * $value is the original filename, will be the same as $key for most entries
-     *
-     * @return array file list
-     */
-    public function getFileList() {
-        return $this->fileList;
-    }
-
-    /**
-     * Set default chapter target size.
-     * Default is 250000 bytes, and minimum is 10240 bytes.
-     *
-     * @param int $size segment size in bytes
-     *
-     * @return void
-     */
-    public function setSplitSize($size) {
-        $this->splitDefaultSize = (int)$size;
-        if ($size < 10240) {
-            $this->splitDefaultSize = 10240; // Making the file smaller than 10k is not a good idea.
-        }
-    }
-
-    /**
-     * Get the chapter target size.
-     *
-     * @return int $size
-     */
-    public function getSplitSize() {
-        return $this->splitDefaultSize;
-    }
-    
-    /**
-     * @return string
-     */
-    public function getLog() {
-        return $this->log->getLog();
-    }
-
-    /**
-     * Viewport is used for fixed-layout books, specifically ePub 3 books using the Rendition metadata.
-     * Calling this function without arguments clears the viewport.
-     *
-     * The predefined viewports can be accessed with $this->viewportMap
-     *
-     * @param int|string $width integer for the width, or a string referencing an entry in the $viewportMap.
-     * @param int $height
-     */
-    public function setViewport($width = null, $height = null) {
-        if ($width == null) {
-            unset($this->viewport);
-        }
-        if (is_string($width) && in_array($width, $this->viewportMap)) {
-            $vp = $this->viewportMap[$width];
-            $width = $vp['width'];
-            $height = $vp['height'];
-        }
-        $this->viewport = ['width' => $width, 'height' => $height];
-    }
-
-    /**
-     * Generate the viewport meta line if the viewport is set.
-     *
-     * @return string the meta data line, or an empty string if no viewport is defined.
-     */
-    public function getViewportMetaLine() {
-        if (empty($this->viewport)) {
-            return "";
-        }
-
-        return "\t\t<meta name=\"viewport\" content=\"width=" . $this->viewport['width'] . ", height=" . $this->viewport['height'] . "\"/>\n";
-    }
-
-    /**
-     * Set or clear "Dangermode"
-     *
-     * Dangermode allows the user to access the structure of the ePub directly,
-     * potentially leading to defective files.
-     *
-     * @param bool $dangermode
-     */
-    public function setDangermode($dangermode) {
-        $this->dangermode = $dangermode === true;
-    }
-
-    /**
-     * The Opf data isn't generated before the ePub is finalized.
-     *
-     * @return null|Opf the Opf structure class.
-     */
-    public function DANGER_getOpf() {
-        return $this->dangermode ? $this->opf : null;
-    }
-
-    /**
-     * The Ncx data isn't generated before the ePub is finalized.
-     *
-     * @return null|Ncx The Ncx Navigation class
-     */
-    public function DANGER_getNcx() {
-        return $this->dangermode ? $this->ncx : null;
-    }
-
-    /**
-     * The Zip file isn't completed before the ePub is finalized,
-     *  however files added ARE packed and written to it immediately,
-     * and their contents can't be altered.
-     *
-     * See the phpzip/phpzip composer package for usage.
-     *
-     * @return null|Zip The actual zip file.
-     */
-    public function DANGER_getZip() {
-        return $this->dangermode ? $this->zip : null;
     }
 }
