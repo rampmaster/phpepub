@@ -246,8 +246,8 @@ class EPub {
         // Add mimetype as the first entry and store it uncompressed (required by EPUB spec)
         $this->zip->addFromString('mimetype', 'application/epub+zip');
         // Attempt to set storage (no compression) for the mimetype entry. If not supported, ignore.
-        if (defined('ZipArchive::CM_STORE')) {
-            @\$this->zip->setCompressionName('mimetype', ZipArchive::CM_STORE);
+        if (defined('\ZipArchive::CM_STORE')) {
+            @ $this->zip->setCompressionName('mimetype', \ZipArchive::CM_STORE);
         }
         $this->zip->addEmptyDir('META-INF');
 
@@ -2041,6 +2041,80 @@ class EPub {
     }
 
     /**
+     * Return the finalized book.
+     *
+     * @return string with the book in binary form.
+     */
+    public function getBook() {
+        if (!$this->isFinalized) {
+            $this->finalize();
+        }
+
+        if ($this->zip instanceof \ZipArchive) {
+            // close to flush to disk
+            $this->zip->close();
+        }
+
+        if (!is_file($this->zipPath)) {
+            throw new \RuntimeException('Epub temporary file missing');
+        }
+
+        $data = file_get_contents($this->zipPath);
+        if ($data === false) {
+            throw new \RuntimeException('Unable to read epub temporary file');
+        }
+
+        return $data;
+    }
+
+    /**
+     * Return the finalized book size.
+     *
+     * @return int
+     */
+    public function getBookSize() {
+        if (!$this->isFinalized) {
+            $this->finalize();
+        }
+
+        if ($this->zip instanceof \ZipArchive) {
+            $this->zip->close();
+        }
+
+        return is_file($this->zipPath) ? filesize($this->zipPath) : 0;
+    }
+
+    /**
+     * Send the book as a zip file (copy temp to target path).
+     *
+     * @param string $fileName
+     * @return string|bool
+     */
+    public function sendBook($fileName) {
+        if (!$this->isFinalized) {
+            $this->finalize();
+        }
+
+        if (!BinStringStatic::endsWith($fileName, ".epub")) {
+            $fileName .= ".epub";
+        }
+
+        if ($this->zip instanceof \ZipArchive) {
+            $this->zip->close();
+        }
+
+        if (!is_file($this->zipPath)) {
+            return false;
+        }
+
+        if (!copy($this->zipPath, $fileName)) {
+            return false;
+        }
+
+        return $fileName;
+    }
+
+    /**
      * Check for mandatory parameters and finalize the e-book.
      * Once finalized, the book is locked for further additions.
      *
@@ -2296,5 +2370,40 @@ class EPub {
         $this->ncx->setDocTitle(StringHelper::decodeHtmlEntities($this->title));
 
         return $this->ncx->finalizeEPub3($title, $cssFileName);
+    }
+
+    /**
+     * Viewport is used for fixed-layout books, specifically ePub 3 books using the Rendition metadata.
+     * Calling this function without arguments clears the viewport.
+     *
+     * The predefined viewports can be accessed with $this->viewportMap
+     *
+     * @param int|string $width integer for the width, or a string referencing an entry in the $viewportMap.
+     * @param int $height
+     */
+    public function setViewport($width = null, $height = null) {
+        if ($width == null) {
+            unset($this->viewport);
+            return;
+        }
+        if (is_string($width) && array_key_exists($width, $this->viewportMap)) {
+            $vp = $this->viewportMap[$width];
+            $width = $vp['width'];
+            $height = $vp['height'];
+        }
+        $this->viewport = ['width' => $width, 'height' => $height];
+    }
+
+    /**
+     * Generate the viewport meta line if the viewport is set.
+     *
+     * @return string the meta data line, or an empty string if no viewport is defined.
+     */
+    public function getViewportMetaLine() {
+        if (empty($this->viewport)) {
+            return "";
+        }
+
+        return "\t\t<meta name=\"viewport\" content=\"width=" . $this->viewport['width'] . ", height=" . $this->viewport['height'] . "\"/>\n";
     }
 }

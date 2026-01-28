@@ -3,6 +3,7 @@ namespace Rampmaster\EPub\Core\Format;
 
 use Rampmaster\EPub\Core\EPub;
 use Rampmaster\EPub\Helpers\FileHelper;
+use Symfony\Component\Process\Process;
 
 /**
  * Stub de adaptador EPUB. Implementa la interfaz pero delega en la clase EPub existente.
@@ -82,20 +83,32 @@ class EpubAdapter implements FormatAdapterInterface {
             return false;
         }
 
-        // If epubcheck available, use it
-        $epubcheck = null;
-        $which = trim(`which epubcheck`);
-        if ($which) {
-            $epubcheck = $which;
+        // If epubcheck available, use it (via symfony/process)
+        try {
+            // First try system binary 'epubcheck'
+            $probe = new Process(['epubcheck', '--version']);
+            $probe->run();
+            if ($probe->isSuccessful()) {
+                $proc = new Process(['epubcheck', $path]);
+                $proc->setTimeout(60);
+                $proc->run();
+                return $proc->isSuccessful();
+            }
+        } catch (\Throwable $e) {
+            // ignore and try next option
         }
 
-        if ($epubcheck) {
-            $cmd = escapeshellcmd($epubcheck) . ' ' . escapeshellarg($path) . ' 2>&1';
-            $output = [];
-            $ret = 0;
-            exec($cmd, $output, $ret);
-            // epubcheck returns 0 on success
-            return $ret === 0;
+        // Fallback: try bundled epubcheck JAR if present in repository root at /epubcheck/epubcheck.jar
+        $jarPath = __DIR__ . '/../../../epubcheck/epubcheck.jar';
+        if (is_file($jarPath)) {
+            try {
+                $proc = new Process(['java', '-jar', $jarPath, $path]);
+                $proc->setTimeout(120);
+                $proc->run();
+                return $proc->isSuccessful();
+            } catch (\Throwable $e) {
+                // ignore and fall back to zip checks
+            }
         }
 
         // Fallback: open zip and check for mimetype and OEBPS/book.opf
@@ -107,6 +120,18 @@ class EpubAdapter implements FormatAdapterInterface {
             $hasNcx = $zip->locateName('OEBPS/book.ncx', \ZipArchive::FL_NODIR) !== false;
             $hasEpub3Toc = $zip->locateName('OEBPS/epub3toc.xhtml', \ZipArchive::FL_NODIR) !== false;
             $zip->close();
+
+            // If ZipArchive couldn't find the mimetype entry, check the first bytes of the file
+            if (!$hasMimetype) {
+                $fp = @fopen($path, 'rb');
+                if ($fp) {
+                    $first = fread($fp, 20);
+                    fclose($fp);
+                    if (strpos($first, 'application/epub+zip') !== false) {
+                        $hasMimetype = true;
+                    }
+                }
+            }
 
             return $hasMimetype && $hasOpf && ($hasNcx || $hasEpub3Toc);
         }

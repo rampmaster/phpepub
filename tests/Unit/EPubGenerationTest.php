@@ -44,6 +44,7 @@ class EPubGenerationTest extends TestCase {
 
         // Validate using adapter
         $valid = $adapter->validate($output);
+
         $this->assertTrue($valid, 'El epub debe ser válido según las comprobaciones disponibles');
 
         // Open zip and assert presence of mimetype and OEBPS/book.opf

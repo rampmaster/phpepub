@@ -6,3 +6,4 @@ vendor/
 *.epub
 build
 !build/.gitkeep
+epubcheck

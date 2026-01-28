@@ -337,7 +337,7 @@ class Ncx {
             . "\t\t<meta http-equiv=\"default-style\" content=\"text/html; charset=utf-8\"/>\n";
 
         if ($this->parentBook !== null) {
-            $end .= $this->parentBook->getViewportMetaLine();
+//            $end .= $this->parentBook->getViewportMetaLine();
         }
 
         if ($cssFileName !== null) {
