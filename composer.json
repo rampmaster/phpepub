@@ -27,9 +27,9 @@
     "php": "^8.2",
     "ext-dom": "*",
     "ext-zip": "*",
-    "symfony/uid": "^7.2",
-    "symfony/filesystem": "^7.2",
-    "symfony/process": "^8.0"
+    "symfony/uid": "^7.4",
+    "symfony/filesystem": "^7.4",
+    "symfony/process": "^7.4"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",
@@ -54,6 +54,8 @@
     "scripts": {
       "phpcs": "phpcs -s",
       "phpstan": "phpstan",
+      "epubcheck:version": "php bin/epubcheck.php --version",
+      "epubcheck:validate": "php bin/epubcheck.php",
       "test": "phpunit",
       "ci": [
         "@phpcs",
@@ -64,6 +66,8 @@
     "scripts-descriptions": {
       "phpcs": "Run PHP Code Sniffer",
       "phpstan": "Run PHPStan (with Larastan extension)",
+      "epubcheck:version": "Print epubcheck version (java -jar epubcheck/epubcheck.jar or system binary)",
+      "epubcheck:validate": "Validate EPUB_FILE env var using system epubcheck",
       "test": "Run the PHPUnit tests",
       "ci": "Run all CI tests"
     }
