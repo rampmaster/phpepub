@@ -1,0 +1,7 @@
+parameters:
+    paths:
+        - src
+        - tests
+    level: 5
+    ignoreErrors:
+        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::children\(\).#'
