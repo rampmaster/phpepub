@@ -26,6 +26,7 @@
   "require": {
     "php": "^8.2",
     "ext-dom": "*",
+    "ext-zip": "*",
     "symfony/uid": "^7.2",
     "nelexa/zip": "^4.0",
     "symfony/filesystem": "^7.2"

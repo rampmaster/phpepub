@@ -2288,22 +2288,23 @@ class EPub {
             $this->finalize();
         }
 
-        // nelexa/php-zip no expone un método directo para obtener los bytes del ZIP.
-        // Escribimos el ZIP a un stream temporal y devolvemos su contenido.
-        $handle = fopen('php://temp', 'w+b');
-        if ($handle === false) {
-            throw new \RuntimeException('Unable to open temporary stream for zip output');
+        // Use a temporary file and save the zip there; some implementations of
+        // saveAsStream may close or alter the stream passed, so saveAsFile is safer.
+        $tmp = tempnam(sys_get_temp_dir(), 'epub_');
+        if ($tmp === false) {
+            throw new \RuntimeException('Unable to create temporary file for zip output');
         }
 
-        // saveAsStream escribe el zip en el stream y cierra el stream
-        $this->zip->saveAsStream($handle);
-
-        // Rewind y leer contenido
-        rewind($handle);
-        $data = stream_get_contents($handle);
-        fclose($handle);
-
-        return $data;
+        try {
+            $this->zip->saveAsFile($tmp);
+            $data = file_get_contents($tmp);
+            if ($data === false) {
+                throw new \RuntimeException('Unable to read temporary epub file');
+            }
+            return $data;
+        } finally {
+            @unlink($tmp);
+        }
     }
 
     /**
