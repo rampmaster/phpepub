@@ -114,14 +114,105 @@ class EpubAdapter implements FormatAdapterInterface {
         // Fallback: open zip and check for mimetype and OEBPS/book.opf
         $zip = new \ZipArchive();
         if ($zip->open($path) === true) {
+            // Prefer to read container.xml to find the OPF location
+            $containerPath = null;
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $entry = $zip->getNameIndex($i);
+                if (str_ends_with(strtolower($entry), 'meta-inf/container.xml')) {
+                    $containerPath = $entry;
+                    break;
+                }
+            }
+
+            $hasOpf = false;
+            $hasNcx = false;
+            $hasEpub3Toc = false;
+            $hasMimetype = false;
+
+            if ($containerPath !== null) {
+                $containerXml = $zip->getFromName($containerPath);
+                if ($containerXml !== false) {
+                    try {
+                        $doc = new \DOMDocument();
+                        $doc->loadXML($containerXml);
+                        $rootfiles = $doc->getElementsByTagName('rootfile');
+                        if ($rootfiles->length > 0) {
+                            $fullPath = $rootfiles->item(0)->getAttribute('full-path');
+                            if (!empty($fullPath) && $zip->locateName($fullPath, \ZipArchive::FL_NODIR) !== false) {
+                                $hasOpf = true;
+                                $opfContent = $zip->getFromName($fullPath);
+                                if ($opfContent !== false) {
+                                    // look for NCX item in manifest (application/x-dtbncx+xml)
+                                    if (stripos($opfContent, 'application/x-dtbncx+xml') !== false) {
+                                        $hasNcx = true;
+                                    }
+                                    // look for EPUB3 nav item (properties="nav")
+                                    if (stripos($opfContent, 'properties="nav"') !== false || stripos($opfContent, "properties='nav'") !== false) {
+                                        $hasEpub3Toc = true;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (\Throwable $e) {
+                        // fall back to scanning entries
+                    }
+                }
+            }
+
+            // If we didn't find OPF via container.xml, fallback to scanning entries
+            if (!$hasOpf || (!$hasNcx && !$hasEpub3Toc)) {
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $name = $zip->getNameIndex($i);
+                    $lname = strtolower($name);
+
+                    // detect mimetype item
+                    if (!$hasMimetype && $lname === 'mimetype') {
+                        $hasMimetype = true;
+                    }
+
+                    if (!$hasOpf && preg_match('/\.opf$/i', $lname)) {
+                        $hasOpf = true;
+                    }
+                    if (!$hasNcx && preg_match('/\.ncx$/i', $lname)) {
+                        $hasNcx = true;
+                    }
+
+                    if (!$hasEpub3Toc && preg_match('/\.(xhtml|html?|xml)$/i', $lname)) {
+                        $contents = $zip->getFromIndex($i);
+                        if ($contents !== false) {
+                            if (stripos($contents, '<nav') !== false || stripos($contents, 'epub:type') !== false || stripos($contents, 'properties="nav"') !== false) {
+                                $hasEpub3Toc = true;
+                            }
+                        }
+                    }
+
+                    if ($hasOpf && ($hasNcx || $hasEpub3Toc) && $hasMimetype) {
+                        break;
+                    }
+                }
+
+                // close after scanning
+                $zip->close();
+
+                // If ZipArchive couldn't find the mimetype entry, check first bytes
+                if (!$hasMimetype) {
+                    $fp = @fopen($path, 'rb');
+                    if ($fp) {
+                        $first = fread($fp, 20);
+                        fclose($fp);
+                        if (strpos($first, 'application/epub+zip') !== false) {
+                            $hasMimetype = true;
+                        }
+                    }
+                }
+
+                return $hasMimetype && $hasOpf && ($hasNcx || $hasEpub3Toc);
+            }
+
+            // If we got here, we had OPF detected via container.xml and maybe found ncx/nav
+            // Also confirm mimetype presence
             $mimetypeIndex = $zip->locateName('mimetype', \ZipArchive::FL_NODIR);
             $hasMimetype = $mimetypeIndex !== false;
-            $hasOpf = $zip->locateName('OEBPS/book.opf', \ZipArchive::FL_NODIR) !== false;
-            $hasNcx = $zip->locateName('OEBPS/book.ncx', \ZipArchive::FL_NODIR) !== false;
-            $hasEpub3Toc = $zip->locateName('OEBPS/epub3toc.xhtml', \ZipArchive::FL_NODIR) !== false;
-            $zip->close();
-
-            // If ZipArchive couldn't find the mimetype entry, check the first bytes of the file
             if (!$hasMimetype) {
                 $fp = @fopen($path, 'rb');
                 if ($fp) {

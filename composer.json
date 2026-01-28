@@ -28,6 +28,7 @@
     "ext-dom": "*",
     "ext-zip": "*",
     "symfony/uid": "^7.4",
+    "symfony/console": "^7.4",
     "symfony/filesystem": "^7.4",
     "symfony/process": "^7.4"
   },
@@ -44,7 +45,7 @@
       "Rampmaster\\EPub\\Test\\": "tests"
     },
     "classmap": [
-      "classmap//BinStringStatic.php"
+      "classmap/BinStringStatic.php"
     ]
   },
   "config": {
@@ -54,8 +55,8 @@
     "scripts": {
       "phpcs": "phpcs -s",
       "phpstan": "phpstan",
-      "epubcheck:version": "php bin/epubcheck.php --version",
-      "epubcheck:validate": "php bin/epubcheck.php",
+      "epubcheck:version": "php bin/console epubcheck:version",
+      "epubcheck:validate": "php bin/console epubcheck:validate",
       "test": "phpunit",
       "ci": [
         "@phpcs",
