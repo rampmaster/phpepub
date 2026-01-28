@@ -668,9 +668,13 @@ class EPub {
         if (!$this->isInitialized) {
             $this->initialize();
         }
-        $fileName = FileHelper::normalizeFileName($fileName);
+        // normalize and sanitize path for META-INF
+        $safeName = FileHelper::sanitizeZipPath($fileName, true);
+        if ($safeName === false) {
+            return false;
+        }
 
-        $this->zip->addFromString("META-INF/" . $fileName, $fileData);
+        $this->zip->addFromString("META-INF/" . $safeName, $fileData);
 
         return true;
     }
@@ -692,13 +696,17 @@ class EPub {
         if (!$this->isInitialized) {
             $this->initialize();
         }
-        $fileName = FileHelper::normalizeFileName($fileName);
+        // normalize and sanitize path for internal OEBPS files
+        $safeName = FileHelper::sanitizeZipPath($fileName, false);
+        if ($safeName === false) {
+            return false;
+        }
 
         $compress = (strpos($mimetype, "image/") !== 0);
 
-        $this->zip->addFromString($this->bookRoot . $fileName, $fileData);
-        $this->fileList[$fileName] = $fileName;
-        $this->opf->addItem($fileId, $fileName, $mimetype);
+        $this->zip->addFromString($this->bookRoot . $safeName, $fileData);
+        $this->fileList[$safeName] = $safeName;
+        $this->opf->addItem($fileId, $safeName, $mimetype);
 
         return true;
     }
@@ -2244,13 +2252,15 @@ class EPub {
             $this->initialize();
         }
 
-        $fileName = Path::canonicalize($fileName);
-        $fileName = preg_replace('#^[/\.]+#i', "", $fileName);
+        $safeName = FileHelper::sanitizeZipPath($fileName, false);
+        if ($safeName === false) {
+            return false;
+        }
 
-        $this->zip->addFromString($this->bookRoot . $fileName, $tocData);
+        $this->zip->addFromString($this->bookRoot . $safeName, $tocData);
 
-        $this->fileList[$fileName] = $fileName;
-        $this->opf->addItem("toc", $fileName, "application/xhtml+xml", "nav");
+        $this->fileList[$safeName] = $safeName;
+        $this->opf->addItem("toc", $safeName, "application/xhtml+xml", "nav");
 
         return true;
     }

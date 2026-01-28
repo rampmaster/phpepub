@@ -147,4 +147,61 @@ class FileHelper {
     public static function normalizeFileName($fileName) {
         return preg_replace('#^[/\.]+#i', "", Path::canonicalize($fileName));
     }
+
+    /**
+     * Sanitize a path intended to be stored in the EPUB ZIP archive.
+     * Returns the normalized safe path, or FALSE if the path is unsafe.
+     *
+     * @param string $fileName
+     * @param bool $allowMeta Allow entries under META-INF/ (default false)
+     * @return string|false
+     */
+    public static function sanitizeZipPath(string $fileName, bool $allowMeta = false) {
+        // Remove NUL bytes and normalize separators
+        $fileName = str_replace("\0", '', $fileName);
+        $fileName = str_replace('\\', '/', $fileName);
+
+        // Canonicalize (resolves .. and .)
+        $canonical = Path::canonicalize($fileName);
+
+        // Remove leading ./ or / sequences
+        $canonical = preg_replace('#^[/\\\.]+#', '', $canonical);
+
+        // Reject empty
+        if ($canonical === '' || $canonical === '.' || $canonical === '..') {
+            return false;
+        }
+
+        // Reject any remaining upward traversal segments
+        $parts = explode('/', $canonical);
+        foreach ($parts as $part) {
+            if ($part === '..') {
+                return false;
+            }
+        }
+
+        // Reject absolute Windows drive letters
+        if (preg_match('#^[A-Za-z]:#', $canonical)) {
+            return false;
+        }
+
+        // If not allowing META-INF, ensure path does not start with META-INF/
+        if (!$allowMeta) {
+            if (str_starts_with(strtolower($canonical), 'meta-inf/')) {
+                return false;
+            }
+        }
+
+        // Final sanitize: remove disallowed characters from each segment
+        $segments = array_map(function($seg) {
+            return preg_replace('/[\x00-\x1F\x7F]/', '', $seg);
+        }, $parts);
+
+        $safe = implode('/', $segments);
+        // Prevent leading dots, hyphens issues
+        $safe = trim($safe, './\\ ');
+
+        return $safe;
+    }
+
 }
