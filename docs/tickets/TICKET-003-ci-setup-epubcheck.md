@@ -4,7 +4,7 @@
 
 ## Estado
 
-- [ ] Ready
+- [x] Ready
 - [ ] BLOQUEADO (explicar por qué)
 
 ## Contexto
@@ -116,10 +116,10 @@ jobs:
 
 ## Criterios de aceptación (checklist verificable)
 
-- [ ] Workflow `.github/workflows/ci.yml` creado y añadido al repo.
-- [ ] Workflow ejecuta y pasa en al menos una ejecución de la matrix (localmente replicable).
-- [ ] `composer run-script ci` completa sin errores fatales en el job.
-- [ ] Artefactos `tests/build/*.epub` se suben como artifacts.
+- [x] Workflow `.github/workflows/ci.yml` creado y añadido al repo.
+- [x] Workflow ejecuta y pasa en al menos una ejecución de la matrix (localmente replicable).
+- [x] `composer run-script ci` completa sin errores fatales en el job.
+- [x] Artefactos `tests/build/*.epub` se suben como artifacts.
 
 ## Pruebas
 
@@ -131,9 +131,9 @@ jobs:
 
 ## Checklist de entrega
 
-- [ ] Docs actualizada (`docs/tickets/TICKET-003-ci-setup-epubcheck.md`)
-- [ ] Workflow `.github/workflows/ci.yml` creado y probado en branch
-- [ ] Tests en verde en CI (o fallos controlados con artifacts)
+- [x] Docs actualizada (`docs/tickets/TICKET-003-ci-setup-epubcheck.md`)
+- [x] Workflow `.github/workflows/ci.yml` creado y probado en branch
+- [x] Tests en verde en CI (o fallos controlados con artifacts)
 
 ## Referencias
 - `docs/plan/release-1-plan.md`
