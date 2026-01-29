@@ -6,22 +6,7 @@ parameters:
 			path: src/Core/EPub.php
 
 		-
-			message: "#^PHPDoc tag @var has invalid value \\(\\$Zip \\\\ZipArchive\\)\\: Unexpected token \"\\$Zip\", expected type at offset 9$#"
-			count: 1
-			path: src/Core/EPub.php
-
-		-
 			message: "#^PHPDoc tag @var has invalid value \\(\\$firstChapterNavPoint NavPoint\\)\\: Unexpected token \"\\$firstChapterNavPoint\", expected type at offset 9$#"
-			count: 1
-			path: src/Core/EPub.php
-
-		-
-			message: "#^PHPDoc tag @var has invalid value \\(\\$img \\\\DOMElement\\)\\: Unexpected token \"\\$img\", expected type at offset 9$#"
-			count: 2
-			path: src/Core/EPub.php
-
-		-
-			message: "#^PHPDoc tag @var has invalid value \\(\\$link \\\\DOMElement\\)\\: Unexpected token \"\\$link\", expected type at offset 9$#"
 			count: 1
 			path: src/Core/EPub.php
 
