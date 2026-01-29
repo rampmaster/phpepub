@@ -1,12 +1,15 @@
 <?php
+
 namespace Rampmaster\EPub\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Rampmaster\EPub\Core\Format\EpubAdapter;
 use ZipArchive;
 
-class EPubGenerationTest extends TestCase {
-    public function setUp(): void {
+class EPubGenerationTest extends TestCase
+{
+    public function setUp(): void
+    {
         // Ensure build dir is clean
         $build = __DIR__ . '/../build';
         if (is_dir($build)) {
@@ -15,11 +18,16 @@ class EPubGenerationTest extends TestCase {
         mkdir($build, 0775, true);
     }
 
-    private function rrmdir($dir) {
-        if (!is_dir($dir)) return;
+    private function rrmdir($dir)
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
         $objects = scandir($dir);
         foreach ($objects as $object) {
-            if ($object === '.' || $object === '..') continue;
+            if ($object === '.' || $object === '..') {
+                continue;
+            }
             $path = $dir . '/' . $object;
             if (is_dir($path)) {
                 $this->rrmdir($path);
@@ -30,7 +38,8 @@ class EPubGenerationTest extends TestCase {
         @rmdir($dir);
     }
 
-    public function testGenerateEpubFromFixture() {
+    public function testGenerateEpubFromFixture()
+    {
         $adapter = new EpubAdapter();
         // Fixture bajo assets/fixtures (compartido con ejemplos)
         $fixture = __DIR__ . '/../../assets/fixtures/simple/index.html';
@@ -39,9 +48,9 @@ class EPubGenerationTest extends TestCase {
             'language' => 'en',
             'author' => 'Tester',
             'chapters' => [
-                ['name' => 'Intro', 'file' => 'intro.xhtml', 'path' => $fixture]
+                ['name' => 'Intro', 'file' => 'intro.xhtml', 'path' => $fixture],
             ],
-            'buildDir' => __DIR__ . '/../../build'
+            'buildDir' => __DIR__ . '/../../build',
         ]);
 
         $this->assertFileExists($output, 'El archivo epub debe existir');

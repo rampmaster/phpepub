@@ -1,14 +1,19 @@
 <?php
+
 /**
-/**
+ * AbstractNavEntry
+ *
  * @author    A. Grandt <php@grandt.com>
  * @copyright 2014- A. Grandt
  * @license   GNU LGPL 2.1
  */
 
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Structure\NCX;
 
-abstract class AbstractNavEntry {
+abstract class AbstractNavEntry
+{
     /**
      * @return AbstractNavEntry
      */

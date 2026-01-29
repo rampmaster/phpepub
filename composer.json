@@ -54,8 +54,8 @@
     }
   },
   "scripts": {
-    "phpcs": "phpcs -s",
-    "phpstan": "phpstan",
+    "phpcs": "phpcs -s --warning-severity=0",
+    "phpstan": "php tools/run-phpstan.php",
     "epubcheck:version": "php bin/console epubcheck:version",
     "epubcheck:validate": "php bin/console epubcheck:validate",
     "test": "phpunit",

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Structure\OPF;
 
 /**
@@ -8,13 +11,15 @@ namespace Rampmaster\EPub\Core\Structure\OPF;
  * @copyright 2014- A. Grandt
  * @license   GNU LGPL 2.1
  */
-class Guide {
+class Guide
+{
     private $references = [];
 
     /**
      * Class constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
     }
 
     /**
@@ -22,7 +27,8 @@ class Guide {
      *
      * @return void
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         unset($this->references);
     }
 
@@ -31,7 +37,8 @@ class Guide {
      * Enter description here ...
      *
      */
-    public function length() {
+    public function length()
+    {
         return sizeof($this->references);
     }
 
@@ -41,7 +48,8 @@ class Guide {
      *
      * @param Reference $reference
      */
-    public function addReference($reference) {
+    public function addReference($reference)
+    {
         if ($reference != null && is_object($reference) && $reference instanceof Reference) {
             $this->references[] = $reference;
         }
@@ -53,7 +61,8 @@ class Guide {
      *
      * @return string
      */
-    public function finalize() {
+    public function finalize()
+    {
         $ref = "";
         if (sizeof($this->references) > 0) {
             $ref = "\n\t<guide>\n";

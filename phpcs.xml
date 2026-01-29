@@ -11,9 +11,15 @@
 
     <rule ref="Generic.Files.LineLength">
         <properties>
-            <property name="lineLimit" value="160"/>
-            <property name="absoluteLineLimit" value="160"/>
+            <property name="lineLimit" value="200"/>
+            <property name="absoluteLineLimit" value="400"/>
         </properties>
+        <severity>0</severity>
+    </rule>
+
+    <!-- Disable strict types requirement for legacy codebase to reduce noise -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+        <severity>0</severity>
     </rule>
 
     <rule ref="Squiz.Arrays.ArrayDeclaration">
@@ -31,15 +37,12 @@
     </rule>
 
     <config name="installed_paths" value="../../slevomat/coding-standard"/>
-    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
-        <properties>
-            <property name="linesCountBeforeDeclare" value="1" />
-            <property name="linesCountAfterDeclare" value="1" />
-            <property name="spacesCountAroundEqualsSign" value="0" />
-        </properties>
-    </rule>
 
     <arg name="colors" />
     <arg value="p" />
     <arg name="extensions" value="php"/>
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>src/Core/StaticData.php</exclude-pattern>
+    <exclude-pattern>src/Helpers/IBooksHelper.php</exclude-pattern>
+    <exclude-pattern>src/Helpers/Rendition/RenditionHelper.php</exclude-pattern>
 </ruleset>

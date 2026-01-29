@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Format;
 
 use Rampmaster\EPub\Core\EPub;
@@ -9,12 +12,14 @@ use Symfony\Component\Process\Process;
  * Stub de adaptador EPUB. Implementa la interfaz pero delega en la clase EPub existente.
  * Configurable para generar EPUB 2.x o EPUB 3.x según la opción 'version' en $input.
  */
-class EpubAdapter implements FormatAdapterInterface {
+class EpubAdapter implements FormatAdapterInterface
+{
     /**
      * Genera un epub mínimo en build/ y devuelve la ruta al archivo generado.
      * Se esperan campos en $input: title, language, author, chapters (array of [name, filename, pathOrContent]), version
      */
-    public function generate(array $input): string {
+    public function generate(array $input): string
+    {
         $title = $input['title'] ?? 'Untitled';
         $language = $input['language'] ?? 'en';
         $author = $input['author'] ?? null;
@@ -76,7 +81,8 @@ class EpubAdapter implements FormatAdapterInterface {
     /**
      * Valida el epub: usa epubcheck si está en el PATH; si no, valida la presencia de archivos clave dentro del zip.
      */
-    public function validate(string $path): bool {
+    public function validate(string $path): bool
+    {
         if (!is_file($path)) {
             return false;
         }
@@ -231,7 +237,8 @@ class EpubAdapter implements FormatAdapterInterface {
     /**
      * Convert HTML content to valid XHTML for EPUB.
      */
-    private function convertToXhtml(string $content, string $language = 'en', string $title = ''): string {
+    private function convertToXhtml(string $content, string $language = 'en', string $title = ''): string
+    {
         // Quick path: if snippet has no HTML root, treat as body fragment
         $isFragment = (stripos($content, '<html') === false);
 
@@ -283,7 +290,7 @@ class EpubAdapter implements FormatAdapterInterface {
             $bList = $doc->getElementsByTagName('body');
             if ($bList->length > 0) {
                 $b = $bList->item(0);
-            } else if ($doc->documentElement) {
+            } elseif ($doc->documentElement) {
                 $b = $doc->documentElement;
             }
             if ($b) {

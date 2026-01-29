@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core;
 
 use Grandt\BinStringStatic;
@@ -19,7 +22,6 @@ use Rampmaster\EPub\Helpers\StringHelper;
 use Rampmaster\EPub\Helpers\URLHelper;
 use Symfony\Component\Filesystem\Path;
 
-
 /**
  * Create an ePub compatible book file.
  *
@@ -35,7 +37,8 @@ use Symfony\Component\Filesystem\Path;
  * @link      http://www.phpclasses.org/package/6115
  * @link      https://github.com/Grandt/PHPePub
  */
-class EPub {
+class EPub
+{
     public const VERSION = '4.0.6';
 
     public const IDENTIFIER_UUID = 'UUID';
@@ -196,7 +199,8 @@ class EPub {
      * @param string $languageCode
      * @param string $writingDirection
      */
-    public function __construct($bookVersion = EPub::BOOK_VERSION_EPUB2, $languageCode = 'en', $writingDirection = EPub::DIRECTION_LEFT_TO_RIGHT) {
+    public function __construct($bookVersion = EPub::BOOK_VERSION_EPUB2, $languageCode = 'en', $writingDirection = EPub::DIRECTION_LEFT_TO_RIGHT)
+    {
         $this->bookVersion = $bookVersion;
         $this->writingDirection = $writingDirection;
         $this->languageCode = $languageCode;
@@ -211,7 +215,8 @@ class EPub {
         $this->setUp();
     }
 
-    private function setUp() {
+    private function setUp()
+    {
         $this->referencesOrder = [
             Reference::COVER                 => 'Cover Page',
             Reference::TITLE_PAGE            => 'Title Page',
@@ -265,7 +270,8 @@ class EPub {
      * @return void
      * @TODO make sure elements in the destructor match the current class elements
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         unset($this->bookVersion, $this->maxImageWidth, $this->maxImageHeight);
         unset($this->splitDefaultSize, $this->isGifImagesEnabled, $this->isReferencesAddedToToc);
         unset($this->zip, $this->title, $this->language, $this->identifier, $this->identifierType);
@@ -293,7 +299,8 @@ class EPub {
      *
      * @return mixed $success            FALSE if the addition failed, else the new NavPoint.
      */
-    public function addChapter($chapterName, $fileName, $chapterData = null, $autoSplit = false, $externalReferences = EPub::EXTERNAL_REF_IGNORE, $baseDir = "") {
+    public function addChapter($chapterName, $fileName, $chapterData = null, $autoSplit = false, $externalReferences = EPub::EXTERNAL_REF_IGNORE, $baseDir = "")
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -368,7 +375,6 @@ class EPub {
 
             $id = preg_split("/[#]/", $fileName);
             if (sizeof($id) == 2 && $this->isLogging) {
-
                 $name = preg_split('/[\.]/', $id[0]);
                 if (sizeof($name) > 1) {
                     $name = $name[0];
@@ -378,7 +384,7 @@ class EPub {
 
                 if ($rv != false) {
                     /** @var Item $item */
-                    foreach($rv as $item) {
+                    foreach ($rv as $item) {
                         if ($item->hasIndexPoint($id[1])) {
                             $fileName = $item->getHref() . "#" . $id[1];
                             break;
@@ -409,7 +415,8 @@ class EPub {
      * @param string $chapterData
      * @return array
      */
-    public function findIdAttributes($chapterData) {
+    public function findIdAttributes($chapterData)
+    {
         $xmlDoc = new DOMDocument();
         @$xmlDoc->loadHTML($chapterData);
 
@@ -428,7 +435,8 @@ class EPub {
      * @param string $partName
      * @param string $chapterData
      */
-    public function extractIdAttributes($partName, $chapterData) {
+    public function extractIdAttributes($partName, $chapterData)
+    {
         $item = $this->opf->getItemById($partName);
         $ids = $this->findIdAttributes($chapterData);
         foreach ($ids as $id) {
@@ -460,7 +468,8 @@ class EPub {
      *
      * @return bool  false if unsuccessful (book is finalized or $externalReferences == EXTERNAL_REF_IGNORE).
      */
-    protected function processChapterExternalReferences(&$doc, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $htmlDir = "") {
+    protected function processChapterExternalReferences(&$doc, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $htmlDir = "")
+    {
         if ($this->isFinalized || $externalReferences === EPub::EXTERNAL_REF_IGNORE) {
             return false;
         }
@@ -536,7 +545,8 @@ class EPub {
      *
      * @return bool  FALSE if uncuccessful (book is finalized or $externalReferences == EXTERNAL_REF_IGNORE).
      */
-    protected function processChapterStyles(&$xmlDoc, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $htmlDir = "") {
+    protected function processChapterStyles(&$xmlDoc, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $htmlDir = "")
+    {
         if ($this->isFinalized || $externalReferences === EPub::EXTERNAL_REF_IGNORE) {
             return false;
         }
@@ -568,7 +578,8 @@ class EPub {
      *
      * @return bool  FALSE if unsuccessful (book is finalized or $externalReferences == EXTERNAL_REF_IGNORE).
      */
-    protected function processCSSExternalReferences(&$cssFile, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $cssDir = "") {
+    protected function processCSSExternalReferences(&$cssFile, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $cssDir = "")
+    {
         if ($this->isFinalized || $externalReferences === EPub::EXTERNAL_REF_IGNORE) {
             return false;
         }
@@ -613,7 +624,8 @@ class EPub {
      *
      * @return bool
      */
-    protected function resolveImage($source, &$internalPath, &$internalSrc, &$isSourceExternal, $baseDir = "", $htmlDir = "") {
+    protected function resolveImage($source, &$internalPath, &$internalSrc, &$isSourceExternal, $baseDir = "", $htmlDir = "")
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -676,7 +688,8 @@ class EPub {
      *
      * @return bool $success
      */
-    public function addFileToMETAINF($fileName, $fileData) {
+    public function addFileToMETAINF($fileName, $fileData)
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -704,7 +717,8 @@ class EPub {
      *
      * @return bool $success
      */
-    public function addFile($fileName, $fileId, $fileData, $mimetype) {
+    public function addFile($fileName, $fileId, $fileData, $mimetype)
+    {
         if ($this->isFinalized || array_key_exists($fileName, $this->fileList)) {
             return false;
         }
@@ -738,7 +752,8 @@ class EPub {
      *
      * @return bool  FALSE if uncuccessful (book is finalized or $externalReferences == EXTERNAL_REF_IGNORE).
      */
-    protected function processChapterLinks(&$xmlDoc, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $htmlDir = "", $backPath = "") {
+    protected function processChapterLinks(&$xmlDoc, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $htmlDir = "", $backPath = "")
+    {
         if ($this->isFinalized || $externalReferences === EPub::EXTERNAL_REF_IGNORE) {
             return false;
         }
@@ -804,7 +819,8 @@ class EPub {
      *
      * @return bool $success
      */
-    public function addCSSFile($fileName, $fileId, $fileData, $externalReferences = EPub::EXTERNAL_REF_IGNORE, $baseDir = "") {
+    public function addCSSFile($fileName, $fileId, $fileData, $externalReferences = EPub::EXTERNAL_REF_IGNORE, $baseDir = "")
+    {
         if ($this->isFinalized || array_key_exists($fileName, $this->fileList)) {
             return false;
         }
@@ -838,7 +854,8 @@ class EPub {
      *
      * @return bool  FALSE if uncuccessful (book is finalized or $externalReferences == EXTERNAL_REF_IGNORE).
      */
-    protected function processChapterImages(&$xmlDoc, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $htmlDir = "", $backPath = "") {
+    protected function processChapterImages(&$xmlDoc, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $htmlDir = "", $backPath = "")
+    {
         if ($this->isFinalized || $externalReferences === EPub::EXTERNAL_REF_IGNORE) {
             return false;
         }
@@ -906,7 +923,8 @@ class EPub {
      *
      * @return bool  FALSE if uncuccessful (book is finalized or $externalReferences == EXTERNAL_REF_IGNORE).
      */
-    protected function processChapterSources(&$xmlDoc, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $htmlDir = "", $backPath = "") {
+    protected function processChapterSources(&$xmlDoc, $externalReferences = EPub::EXTERNAL_REF_ADD, $baseDir = "", $htmlDir = "", $backPath = "")
+    {
         if ($this->isFinalized || $externalReferences === EPub::EXTERNAL_REF_IGNORE) {
             return false;
         }
@@ -969,7 +987,8 @@ class EPub {
      *
      * @return bool
      */
-    protected function resolveMedia($source, &$internalPath, &$internalSrc, &$isSourceExternal, $baseDir = "", $htmlDir = "") {
+    protected function resolveMedia($source, &$internalPath, &$internalSrc, &$isSourceExternal, $baseDir = "", $htmlDir = "")
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1008,7 +1027,8 @@ class EPub {
             $mime = MimeHelper::getMimeTypeFromExtension(pathinfo($source, PATHINFO_EXTENSION));
             $internalPath = Path::canonicalize("media/" . $internalPath . "/" . $internalSrc);
 
-            if (!array_key_exists($internalPath, $this->fileList) &&
+            if (
+                !array_key_exists($internalPath, $this->fileList) &&
                 $this->addLargeFile($internalPath, "m_" . $internalSrc, $mediaPath, $mime)
             ) {
                 $this->fileList[$internalPath] = $source;
@@ -1033,7 +1053,8 @@ class EPub {
      *
      * @return bool $success
      */
-    public function addLargeFile($fileName, $fileId, $filePath, $mimetype) {
+    public function addLargeFile($fileName, $fileId, $filePath, $mimetype)
+    {
         if ($this->isFinalized || array_key_exists($fileName, $this->fileList)) {
             return false;
         }
@@ -1060,7 +1081,8 @@ class EPub {
     /**
      * initialize defaults.
      */
-    private function initialize() {
+    private function initialize()
+    {
         if ($this->isInitialized) {
             return;
         }
@@ -1097,7 +1119,8 @@ class EPub {
      *
      * @param string $bookRoot
      */
-    public function setBookRoot($bookRoot) {
+    public function setBookRoot($bookRoot)
+    {
         if ($this->isInitialized) {
             die("bookRoot can't be set after book initialization (first file added).");
         }
@@ -1115,7 +1138,8 @@ class EPub {
     /**
      * @return bool
      */
-    public function isEPubVersion2() {
+    public function isEPubVersion2()
+    {
         return $this->bookVersion === EPub::BOOK_VERSION_EPUB2;
     }
 
@@ -1132,8 +1156,9 @@ class EPub {
      *
      * @return bool|NavPoint The new NavPoint for that level.
      */
-    public function subLevel($navTitle = null, $navId = null, $navClass = null, $isNavHidden = false, $writingDirection = null) {
-        return $this->ncx->subLevel($navTitle?StringHelper::decodeHtmlEntities($navTitle):$navTitle, $navId, $navClass, $isNavHidden, $writingDirection);
+    public function subLevel($navTitle = null, $navId = null, $navClass = null, $isNavHidden = false, $writingDirection = null)
+    {
+        return $this->ncx->subLevel($navTitle ? StringHelper::decodeHtmlEntities($navTitle) : $navTitle, $navId, $navClass, $isNavHidden, $writingDirection);
     }
 
     /**
@@ -1141,7 +1166,8 @@ class EPub {
      *
      * Subsequent chapters will be added to this chapters parent level.
      */
-    public function backLevel() {
+    public function backLevel()
+    {
         $this->ncx->backLevel();
     }
 
@@ -1150,7 +1176,8 @@ class EPub {
      *
      * Subsequent chapters will be added to the rooot NavMap.
      */
-    public function rootLevel() {
+    public function rootLevel()
+    {
         $this->ncx->rootLevel();
     }
 
@@ -1161,7 +1188,8 @@ class EPub {
      *
      * @param int $newLevel
      */
-    public function setCurrentLevel($newLevel) {
+    public function setCurrentLevel($newLevel)
+    {
         $this->ncx->setCurrentLevel($newLevel);
     }
 
@@ -1171,7 +1199,8 @@ class EPub {
      *
      * @return int current level count;
      */
-    public function getCurrentLevel() {
+    public function getCurrentLevel()
+    {
         return $this->ncx->getCurrentLevel();
     }
 
@@ -1179,7 +1208,8 @@ class EPub {
      * @param string $nsName
      * @param string $nsURI
      */
-    public function addCustomNamespace($nsName, $nsURI) {
+    public function addCustomNamespace($nsName, $nsURI)
+    {
         if ($this->isFinalized) {
             return;
         }
@@ -1195,7 +1225,8 @@ class EPub {
      * @param string $name
      * @param string $URI
      */
-    public function addCustomPrefix($name, $URI) {
+    public function addCustomPrefix($name, $URI)
+    {
         if ($this->isFinalized) {
             return;
         }
@@ -1213,7 +1244,8 @@ class EPub {
      *
      * @param MetaValue $value
      */
-    public function addCustomMetaValue($value) {
+    public function addCustomMetaValue($value)
+    {
         if ($this->isFinalized) {
             return;
         }
@@ -1232,7 +1264,8 @@ class EPub {
      * @param string $name  property name, including the namespace declaration, ie. "dcterms:modified"
      * @param string $content
      */
-    public function addCustomMetaProperty($name, $content) {
+    public function addCustomMetaProperty($name, $content)
+    {
         if ($this->isFinalized) {
             return;
         }
@@ -1248,7 +1281,8 @@ class EPub {
      * @param string $name
      * @param string $content
      */
-    public function addCustomMetadata($name, $content) {
+    public function addCustomMetadata($name, $content)
+    {
         if ($this->isFinalized) {
             return;
         }
@@ -1264,7 +1298,8 @@ class EPub {
      * @param string $dublinCoreConstant name
      * @param string $value
      */
-    public function addDublinCoreMetadata($dublinCoreConstant, $value) {
+    public function addDublinCoreMetadata($dublinCoreConstant, $value)
+    {
         if ($this->isFinalized) {
             return;
         }
@@ -1284,7 +1319,8 @@ class EPub {
      *
      * @return bool $success
      */
-    public function setCoverImage($fileName, $imageData = null, $mimetype = null) {
+    public function setCoverImage($fileName, $imageData = null, $mimetype = null)
+    {
         if ($this->isFinalized || $this->isCoverImageSet || array_key_exists("CoverPage.xhtml", $this->fileList)) {
             return false;
         }
@@ -1384,7 +1420,8 @@ class EPub {
      *
      * @return bool $success
      */
-    public function addReferencePage($pageName, $fileName, $pageData, $reference, $externalReferences = EPub::EXTERNAL_REF_IGNORE, $baseDir = "") {
+    public function addReferencePage($pageName, $fileName, $pageData, $reference, $externalReferences = EPub::EXTERNAL_REF_IGNORE, $baseDir = "")
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1428,7 +1465,8 @@ class EPub {
      *
      * @return string $content
      */
-    private function wrapChapter($content) {
+    private function wrapChapter($content)
+    {
         return $this->htmlContentHeader . "\n" . $content . "\n" . $this->htmlContentFooter;
     }
 
@@ -1438,7 +1476,8 @@ class EPub {
      * @access public
      * @return number of chapters
      */
-    public function getChapterCount() {
+    public function getChapterCount()
+    {
         return $this->chapterCount;
     }
 
@@ -1448,7 +1487,8 @@ class EPub {
      * @access public
      * @return string $title
      */
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
@@ -1462,7 +1502,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setTitle($title) {
+    public function setTitle($title)
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1477,7 +1518,8 @@ class EPub {
      * @access public
      * @return string $language
      */
-    public function getLanguage() {
+    public function getLanguage()
+    {
         return $this->language;
     }
 
@@ -1494,7 +1536,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setLanguage($language) {
+    public function setLanguage($language)
+    {
         if ($this->isFinalized || mb_strlen($language) != 2) {
             return false;
         }
@@ -1509,7 +1552,8 @@ class EPub {
      * @access public
      * @return string $identifier
      */
-    public function getIdentifier() {
+    public function getIdentifier()
+    {
         return $this->identifier;
     }
 
@@ -1536,7 +1580,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setIdentifier($identifier, $identifierType) {
+    public function setIdentifier($identifier, $identifierType)
+    {
         if ($this->isFinalized || ($identifierType !== EPub::IDENTIFIER_URI && $identifierType !== EPub::IDENTIFIER_ISBN && $identifierType !== EPub::IDENTIFIER_UUID)) {
             return false;
         }
@@ -1552,7 +1597,8 @@ class EPub {
      * @access public
      * @return string $identifierType
      */
-    public function getIdentifierType() {
+    public function getIdentifierType()
+    {
         return $this->identifierType;
     }
 
@@ -1562,7 +1608,8 @@ class EPub {
      * @access public
      * @return string $description
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
@@ -1582,7 +1629,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1597,7 +1645,8 @@ class EPub {
      * @access public
      * @return string $author
      */
-    public function getAuthor() {
+    public function getAuthor()
+    {
         return $this->author;
     }
 
@@ -1622,7 +1671,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setAuthor($author, $authorSortKey) {
+    public function setAuthor($author, $authorSortKey)
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1648,7 +1698,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setPublisher($publisherName, $publisherURL) {
+    public function setPublisher($publisherName, $publisherURL)
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1664,7 +1715,8 @@ class EPub {
      * @access public
      * @return string $publisherName
      */
-    public function getPublisherName() {
+    public function getPublisherName()
+    {
         return $this->publisherName;
     }
 
@@ -1674,7 +1726,8 @@ class EPub {
      * @access public
      * @return string $publisherURL
      */
-    public function getPublisherURL() {
+    public function getPublisherURL()
+    {
         return $this->publisherURL;
     }
 
@@ -1684,7 +1737,8 @@ class EPub {
      * @access public
      * @return string $date
      */
-    public function getDate() {
+    public function getDate()
+    {
         return $this->date;
     }
 
@@ -1706,7 +1760,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setDate($timestamp) {
+    public function setDate($timestamp)
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1722,7 +1777,8 @@ class EPub {
      * @access public
      * @return string $rights
      */
-    public function getRights() {
+    public function getRights()
+    {
         return $this->rights;
     }
 
@@ -1742,7 +1798,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setRights($rightsText) {
+    public function setRights($rightsText)
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1763,7 +1820,8 @@ class EPub {
      *
      * @param string $subject
      */
-    public function setSubject($subject) {
+    public function setSubject($subject)
+    {
         if ($this->isFinalized) {
             return;
         }
@@ -1776,7 +1834,8 @@ class EPub {
      * @access public
      * @return string $sourceURL
      */
-    public function getSourceURL() {
+    public function getSourceURL()
+    {
         return $this->sourceURL;
     }
 
@@ -1796,7 +1855,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setSourceURL($sourceURL) {
+    public function setSourceURL($sourceURL)
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1811,7 +1871,8 @@ class EPub {
      * @access public
      * @return string $coverage
      */
-    public function getCoverage() {
+    public function getCoverage()
+    {
         return $this->coverage;
     }
 
@@ -1839,7 +1900,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setCoverage($coverage) {
+    public function setCoverage($coverage)
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1853,7 +1915,8 @@ class EPub {
      *
      * @return string The relation.
      */
-    public function getRelation() {
+    public function getRelation()
+    {
         return $this->relation;
     }
 
@@ -1867,7 +1930,8 @@ class EPub {
      *
      * @param string $relation
      */
-    public function setRelation($relation) {
+    public function setRelation($relation)
+    {
         if ($this->isFinalized) {
             return;
         }
@@ -1879,7 +1943,8 @@ class EPub {
      *
      * @return string The generator identity string.
      */
-    public function getGenerator() {
+    public function getGenerator()
+    {
         return $this->generator;
     }
 
@@ -1891,7 +1956,8 @@ class EPub {
      *
      * @param string $generator
      */
-    public function setGenerator($generator) {
+    public function setGenerator($generator)
+    {
         if ($this->isFinalized) {
             return;
         }
@@ -1908,7 +1974,8 @@ class EPub {
      * @access public
      * @return bool $success
      */
-    public function setShortDateFormat() {
+    public function setShortDateFormat()
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1926,7 +1993,8 @@ class EPub {
      *
      * @return bool
      */
-    public function setReferencesTitle($referencesTitle = "Guide", $referencesId = "", $referencesClass = "references") {
+    public function setReferencesTitle($referencesTitle = "Guide", $referencesId = "", $referencesClass = "references")
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1944,7 +2012,8 @@ class EPub {
      *
      * @return bool
      */
-    public function setisReferencesAddedToToc($isReferencesAddedToToc = true) {
+    public function setisReferencesAddedToToc($isReferencesAddedToToc = true)
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -1959,7 +2028,8 @@ class EPub {
      * @access public
      * @return bool
      */
-    public function isFinalized() {
+    public function isFinalized()
+    {
         return $this->isFinalized;
     }
 
@@ -1975,7 +2045,8 @@ class EPub {
      *
      * @return bool
      */
-    public function buildTOC($cssFileName = null, $tocCSSClass = "toc", $title = "Table of Contents", $addReferences = true, $addToIndex = false, $tocFileName = "TOC.xhtml") {
+    public function buildTOC($cssFileName = null, $tocCSSClass = "toc", $title = "Table of Contents", $addReferences = true, $addToIndex = false, $tocFileName = "TOC.xhtml")
+    {
         if ($this->isFinalized) {
             return false;
         }
@@ -2011,7 +2082,8 @@ class EPub {
      *
      * @return string The sent file name if successful, FALSE if it failed.
      */
-    public function saveBook($fileName, $baseDir = '.') {
+    public function saveBook($fileName, $baseDir = '.')
+    {
 
         // Make fileName safe
         // $fileName = self::sanitizeFileName($fileName); // It is up to the user to ensure valid file names.
@@ -2045,7 +2117,8 @@ class EPub {
      *
      * @return string with the book in binary form.
      */
-    public function getBook() {
+    public function getBook()
+    {
         if (!$this->isFinalized) {
             $this->finalize();
         }
@@ -2072,7 +2145,8 @@ class EPub {
      *
      * @return int
      */
-    public function getBookSize() {
+    public function getBookSize()
+    {
         if (!$this->isFinalized) {
             $this->finalize();
         }
@@ -2090,7 +2164,8 @@ class EPub {
      * @param string $fileName
      * @return string|bool
      */
-    public function sendBook($fileName) {
+    public function sendBook($fileName)
+    {
         if (!$this->isFinalized) {
             $this->finalize();
         }
@@ -2120,7 +2195,8 @@ class EPub {
      *
      * @return bool $success
      */
-    public function finalize() {
+    public function finalize()
+    {
         if ($this->isFinalized || $this->chapterCount == 0 || empty($this->title) || empty($this->language)) {
             return false;
         }
@@ -2243,13 +2319,14 @@ class EPub {
 
         return true;
     }
-    
+
     /**
      * Finalize and build final ePub structures.
      *
      * @return bool
      */
-    private function finalizeTOC() {
+    private function finalizeTOC()
+    {
         if (!$this->buildTOC) {
             return false;
         }
@@ -2276,14 +2353,14 @@ class EPub {
         }
         $tocData .= $this->getViewportMetaLine();
         $tocData .= "<style type=\"text/css\">\n"
-            . $tocCssCls. ".level1 {text-indent:  0em;}\n"
-            . $tocCssCls. ".level2 {text-indent:  2em;}\n"
-            . $tocCssCls. ".level3 {text-indent:  4em;}\n"
-            . $tocCssCls. ".level4 {text-indent:  6em;}\n"
-            . $tocCssCls. ".level5 {text-indent:  8em;}\n"
-            . $tocCssCls. ".level6 {text-indent: 10em;}\n"
-            . $tocCssCls. ".level7 {text-indent: 12em;}\n"
-            . $tocCssCls. ".reference {}\n"
+            . $tocCssCls . ".level1 {text-indent:  0em;}\n"
+            . $tocCssCls . ".level2 {text-indent:  2em;}\n"
+            . $tocCssCls . ".level3 {text-indent:  4em;}\n"
+            . $tocCssCls . ".level4 {text-indent:  6em;}\n"
+            . $tocCssCls . ".level5 {text-indent:  8em;}\n"
+            . $tocCssCls . ".level6 {text-indent: 10em;}\n"
+            . $tocCssCls . ".level7 {text-indent: 12em;}\n"
+            . $tocCssCls . ".reference {}\n"
             . "</style>\n";
         if (!empty($this->tocCssFileName)) {
             $tocData .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . $this->tocCssFileName . "\" />\n";
@@ -2305,7 +2382,7 @@ class EPub {
                     /** @var $navPoint NavPoint */
                     $fileName = $navPoint->getContentSrc();
                     $level = $navPoint->getLevel() - 2;
-                    $tocData .= "\t<p class='level" . ($level+1) . "'>"
+                    $tocData .= "\t<p class='level" . ($level + 1) . "'>"
                         /* . str_repeat(" &#160;  &#160;  &#160;", $level) . */
                         . "<a href=\"" . $fileName . "\">" . $chapterName . "</a></p>\n";
                 }
@@ -2338,7 +2415,8 @@ class EPub {
      *
      * @return bool
      */
-    public function addEPub3TOC($fileName, $tocData) {
+    public function addEPub3TOC($fileName, $tocData)
+    {
         if ($this->isEPubVersion2() || $this->isFinalized || array_key_exists($fileName, $this->fileList)) {
             return false;
         }
@@ -2365,7 +2443,8 @@ class EPub {
      *
      * @return string
      */
-    public function buildEPub3TOC($cssFileName = null, $title = "Table of Contents") {
+    public function buildEPub3TOC($cssFileName = null, $title = "Table of Contents")
+    {
         $this->ncx->referencesOrder = $this->referencesOrder;
         $this->ncx->setDocTitle(StringHelper::decodeHtmlEntities($this->title));
 
@@ -2381,7 +2460,8 @@ class EPub {
      * @param int|string $width integer for the width, or a string referencing an entry in the $viewportMap.
      * @param int $height
      */
-    public function setViewport($width = null, $height = null) {
+    public function setViewport($width = null, $height = null)
+    {
         if ($width == null) {
             unset($this->viewport);
             return;
@@ -2399,7 +2479,8 @@ class EPub {
      *
      * @return string the meta data line, or an empty string if no viewport is defined.
      */
-    public function getViewportMetaLine() {
+    public function getViewportMetaLine()
+    {
         if (empty($this->viewport)) {
             return "";
         }

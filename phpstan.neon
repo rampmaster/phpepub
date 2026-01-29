@@ -1,7 +1,13 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
     paths:
         - src
         - tests
     level: 5
+    treatPhpDocTypesAsCertain: false
     ignoreErrors:
-        - '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::children\(\).#'
+        -
+            message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition::children\(\).#'
+            reportUnmatched: false

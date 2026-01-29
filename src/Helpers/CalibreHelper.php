@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHPePub
  * <CalibreHelper.php description here>
@@ -8,19 +9,22 @@
  * @license   GNU LGPL 2.1
  */
 
-namespace Rampmaster\EPub\Helpers;
+declare(strict_types=1);
 
+namespace Rampmaster\EPub\Helpers;
 
 use Rampmaster\EPub\Core\EPub;
 
-class CalibreHelper {
+class CalibreHelper
+{
     /**
      * @param EPub   $book
      * @param string $seriesName
      * @param string $seriesIndex
      * @param string $sortTitle
      */
-    public static function setCalibreMetadata($book, $seriesName, $seriesIndex, $sortTitle = null) {
+    public static function setCalibreMetadata($book, $seriesName, $seriesIndex, $sortTitle = null)
+    {
         $book->addCustomMetadata("calibre:series", $seriesName);
         $book->addCustomMetadata("calibre:series_index", "" . $seriesIndex);
         if (!empty($sortTitle)) {

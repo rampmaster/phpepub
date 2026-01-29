@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Console\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -8,12 +11,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 #[AsCommand(name: self::NAME, description: self::DESCRIPTION)]
-class EpubCheckVersionCommand extends Command {
-
+class EpubCheckVersionCommand extends Command
+{
     public const NAME = 'epubcheck:version';
     public const DESCRIPTION = 'Show epubcheck version (binary or jar)';
 
-    protected function execute(InputInterface $input, OutputInterface $output): int {
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
 
         // Determine binary path via Process probe
         try {

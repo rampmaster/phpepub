@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Console\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -9,11 +12,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 #[AsCommand(name: self::NAME, description: self::DESCRIPTION)]
-class EpubCheckValidateCommand extends Command {
+class EpubCheckValidateCommand extends Command
+{
     public const NAME = 'epubcheck:validate';
     public const DESCRIPTION = 'Validate an EPUB with epubcheck (binary or jar)';
 
-    protected function configure(): void {
+    protected function configure(): void
+    {
         $default = getenv('EPUB_FILE') ?: null;
         $this->addArgument('file', InputArgument::OPTIONAL, 'EPUB file to validate', $default);
         $this->setHelp(
@@ -23,7 +28,8 @@ class EpubCheckValidateCommand extends Command {
         );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int {
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
         $file = $input->getArgument('file');
 
         // Determine binary path (use Process to probe which)

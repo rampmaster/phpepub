@@ -28,10 +28,14 @@ class EpubCheckIntegrationTest extends TestCase
 
     private function rrmdir($dir)
     {
-        if (!is_dir($dir)) return;
+        if (!is_dir($dir)) {
+            return;
+        }
         $objects = scandir($dir);
         foreach ($objects as $object) {
-            if ($object === '.' || $object === '..') continue;
+            if ($object === '.' || $object === '..') {
+                continue;
+            }
             $path = $dir . '/' . $object;
             if (is_dir($path)) {
                 $this->rrmdir($path);
@@ -56,9 +60,9 @@ class EpubCheckIntegrationTest extends TestCase
             'language' => 'en',
             'author' => 'CI',
             'chapters' => [
-                ['name' => 'Intro', 'file' => 'intro.xhtml', 'path' => $fixture]
+                ['name' => 'Intro', 'file' => 'intro.xhtml', 'path' => $fixture],
             ],
-            'buildDir' => $this->buildDir
+            'buildDir' => $this->buildDir,
         ]);
 
         $this->assertFileExists($outputPath, 'Generated epub should exist');

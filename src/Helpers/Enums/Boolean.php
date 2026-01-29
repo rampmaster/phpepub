@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Helpers\Enums;
 
 use Rampmaster\EPub\Helpers\Enum;
@@ -10,7 +13,8 @@ use Rampmaster\EPub\Helpers\Enum;
  * @copyright 2015- A. Grandt
  * @license   GNU LGPL 2.1
  */
-abstract class Boolean extends Enum {
+abstract class Boolean extends Enum
+{
     public const TRUE = "true";
     public const FALSE = "false";
 
@@ -19,7 +23,8 @@ abstract class Boolean extends Enum {
      *
      * @return string constant
      */
-    public static function getBoolean($value) {
+    public static function getBoolean($value)
+    {
         if (is_bool($value)) {
             return $value === true ? self::TRUE : self::FALSE;
         }

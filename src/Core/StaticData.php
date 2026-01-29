@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core;
 
 /**
@@ -8,7 +11,8 @@ namespace Rampmaster\EPub\Core;
  * @copyright 2009- A. Grandt
  * @license   GNU LGPL 2.1
  */
-class StaticData {
+class StaticData
+{
     public static $htmlEntities = [
         "&quot;"     => "\x22", // &#34; ((double) quotation mark)
         "&amp;"      => "\x26", // &#38; (ampersand)
