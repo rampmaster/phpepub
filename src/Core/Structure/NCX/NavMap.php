@@ -115,7 +115,7 @@ class NavMap extends AbstractNavEntry
         if (sizeof($this->navPoints) > 0) {
             $this->navLevels++;
             foreach ($this->navPoints as $navPoint) {
-                /** @var $navPoint NavPoint */
+                /** @var NavPoint $navPoint */
                 $retLevel = $navPoint->finalize($nav, $playOrder, 0);
                 if ($retLevel > $this->navLevels) {
                     $this->navLevels = $retLevel;
@@ -143,7 +143,7 @@ class NavMap extends AbstractNavEntry
 
             $nav .= str_repeat("\t", $level) . "\t\t\t<ol epub:type=\"list\">\n";
             foreach ($this->navPoints as $navPoint) {
-                /** @var $navPoint NavPoint */
+                /** @var NavPoint $navPoint */
                 $retLevel = $navPoint->finalizeEPub3($nav, $playOrder, 0);
                 if ($retLevel > $this->navLevels) {
                     $this->navLevels = $retLevel;

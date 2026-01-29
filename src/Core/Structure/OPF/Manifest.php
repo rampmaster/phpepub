@@ -57,7 +57,7 @@ class Manifest
     {
         $manifest = "\n\t<manifest>\n";
         foreach ($this->items as $item) {
-            /** @var $item Item */
+            /** @var Item $item */
             $manifest .= $item->finalize($bookVersion);
         }
 

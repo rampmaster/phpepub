@@ -47,16 +47,16 @@ class Opf
 
     public $date = null;
 
-    /** @var $metadata Metadata */
+    /** @var Metadata $metadata */
     public $metadata = null;
 
-    /** @var $manifest Manifest */
+    /** @var Manifest $manifest */
     public $manifest = null;
 
-    /** @var $spine Spine */
+    /** @var Spine $spine */
     public $spine = null;
 
-    /** @var $guide Guide */
+    /** @var Guide $guide */
     public $guide = null;
 
     public $namespaces = ["xsi" => "http://www.w3.org/2001/XMLSchema-instance"];

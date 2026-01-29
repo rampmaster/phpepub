@@ -29,7 +29,7 @@ class NavPoint extends AbstractNavEntry
 
     private $navPoints = [];
 
-    /** @var $parent AbstractNavEntry */
+    /** @var AbstractNavEntry $parent */
     private $parent = null;
 
     private $writingDirection = EPub::DIRECTION_LEFT_TO_RIGHT;
@@ -185,7 +185,7 @@ class NavPoint extends AbstractNavEntry
     public function addNavPoint($navPoint)
     {
         if ($navPoint != null && is_object($navPoint) && $navPoint instanceof NavPoint) {
-            /** @var $navPoint NavPoint */
+            /** @var NavPoint $navPoint */
             $navPoint->setParent($this);
             if ($navPoint->getWritingDirection() == null) {
                 $navPoint->setWritingDirection($this->writingDirection);
@@ -250,7 +250,7 @@ class NavPoint extends AbstractNavEntry
         if (sizeof($this->navPoints) > 0) {
             $maxLevel++;
             foreach ($this->navPoints as $navPoint) {
-                /** @var $navPoint NavPoint */
+                /** @var NavPoint $navPoint */
                 $retLevel = $navPoint->finalize($nav, $playOrder, ($level + 1 + $levelAdjust));
                 if ($retLevel > $maxLevel) {
                     $maxLevel = $retLevel;
@@ -312,7 +312,7 @@ class NavPoint extends AbstractNavEntry
             $nav .= ">\n";
 
             foreach ($this->navPoints as $navPoint) {
-                /** @var $navPoint NavPoint */
+                /** @var NavPoint $navPoint */
                 $retLevel = $navPoint->finalizeEPub3($nav, $playOrder, ($level + 2), $subLevelClass, $subLevelHidden);
                 if ($retLevel > $maxLevel) {
                     $maxLevel = $retLevel;

@@ -67,7 +67,7 @@ class Guide
         if (sizeof($this->references) > 0) {
             $ref = "\n\t<guide>\n";
             foreach ($this->references as $reference) {
-                /** @var $reference Reference */
+                /** @var Reference $reference */
                 $ref .= $reference->finalize();
             }
             $ref .= "\t</guide>\n";
