@@ -1,43 +1,43 @@
 # Ticket: release_TICKET-009_Integration-Tests-R3
 
-> Regla: este ticket debe ser ejecutable **sin interpretación**. Si un campo no se puede responder, el ticket debe marcarse como **BLOQUEADO** y explicitar qué falta.
+> Rule: this ticket must be executable **without interpretation**. If a field cannot be answered, the ticket must be marked as **BLOCKED** and explicitly state what is missing.
 
-## Estado
+## Status
 
 - [x] Ready
-- [ ] BLOQUEADO (explicar por qué)
+- [ ] BLOCKED (explain why)
 
-## Contexto
+## Context
 
-Validar Release 3 (EPUB 3.2 y compatibilidad 2.0.1 mejorada).
+Validate Release 3 (EPUB 3.2 and improved 2.0.1 compatibility).
 
-## Objetivo (medible)
+## Objective (measurable)
 
-- Tests de integración para EPUB 3.2.
-- Test de integración para EPUB 2.0.1 con contenido "sucio" (HTML5).
+- Integration tests for EPUB 3.2.
+- Integration test for EPUB 2.0.1 with "dirty" content (HTML5).
 
-## Alcance
+## Scope
 
-**Incluye**:
-- Actualizar `EpubCheckIntegrationTest`.
+**Includes**:
+- Update `EpubCheckIntegrationTest`.
 
-## Contrato funcional
+## Functional Contract
 
-### Entradas
+### Inputs
 - `phpunit`
 
-### Salidas
+### Outputs
 - Green tests.
 
-## Plan de implementación
+## Implementation Plan
 
-1. Añadir 'EPUB 3.2' al data provider.
-2. Crear nuevo test `testEpub2CompatibilityWithHtml5Content`.
+1. Add 'EPUB 3.2' to the data provider.
+2. Create new test `testEpub2CompatibilityWithHtml5Content`.
 
-## Criterios de aceptación (checklist verificable)
+## Acceptance Criteria (verifiable checklist)
 
-- [x] CI pasa.
+- [x] CI passes.
 
-## Pruebas
+## Tests
 
-- Ejecutar `composer test`.
+- Run `composer test`.

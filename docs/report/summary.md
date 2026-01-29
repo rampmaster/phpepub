@@ -1,14 +1,14 @@
-# Resumen ejecutivo
+# Executive Summary
 
-Objetivo: convertir `phpepub` en una librería robusta para generar ePubs compatibles con estándares modernos (EPUB 3.x) y generar formatos derivados (AZW3) para Kindle.
+Objective: Transform `phpepub` into a robust library for generating EPUBs compatible with modern standards (EPUB 3.x) and generating derivative formats (AZW3) for Kindle.
 
-Alcance inicial (R1):
-- Fortalecimiento de seguridad (manejo de ZIP, sanitización de metadatos).
-- Implementación de packaging y TOC para EPUB 3.0.
-- Pipeline CI que valide generación con `epubcheck` y ejecute tests en PHP 8.2–8.5.
+Initial Scope (R1):
+- Security hardening (ZIP handling, metadata sanitization).
+- Implementation of packaging and TOC for EPUB 3.0.
+- CI Pipeline validating generation with `epubcheck` and running tests on PHP 8.2–8.5.
 
-Entregables:
-- Documentación en `docs/`.
-- Tickets en `docs/tickets/release-1/`.
-- Plantillas de adaptadores de formato en `src/Core/Format/`.
-- Plantillas de tests en `tests/` y fixtures en `tests/fixtures/`.
+Deliverables:
+- Documentation in `docs/`.
+- Tickets in `docs/tickets/`.
+- Format adapter templates in `src/Core/Format/`.
+- Test templates in `tests/` and fixtures in `tests/fixtures/`.

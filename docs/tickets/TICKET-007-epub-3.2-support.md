@@ -1,51 +1,51 @@
 # Ticket: release_TICKET-007_EPUB-3.2-Support
 
-> Regla: este ticket debe ser ejecutable **sin interpretación**. Si un campo no se puede responder, el ticket debe marcarse como **BLOQUEADO** y explicitar qué falta.
+> Rule: this ticket must be executable **without interpretation**. If a field cannot be answered, the ticket must be marked as **BLOCKED** and explicitly state what is missing.
 
-## Estado
+## Status
 
 - [x] Ready
-- [ ] BLOQUEADO (explicar por qué)
+- [ ] BLOCKED (explain why)
 
-## Contexto
+## Context
 
-EPUB 3.2 es la especificación actual recomendada. Es altamente compatible con 3.0.1 pero relaja algunas restricciones de 3.1. El objetivo es permitir generar archivos conformes a EPUB 3.2.
+EPUB 3.2 is the current recommended specification. It is highly compatible with 3.0.1 but relaxes some restrictions of 3.1. The objective is to allow generating files compliant with EPUB 3.2.
 
-## Objetivo (medible)
+## Objective (measurable)
 
-- Permitir configurar la generación para versión "3.2".
-- Generar OPF con `version="3.2"`.
-- Pasar validación `epubcheck`.
+- Allow configuring generation for version "3.2".
+- Generate OPF with `version="3.2"`.
+- Pass `epubcheck` validation.
 
-## Alcance
+## Scope
 
-**Incluye**:
-- Añadir constante `BOOK_VERSION_EPUB32` en `src/Core/EPub.php`.
-- Ajustar lógica en `Opf.php` y `EPub.php` para tratar 3.2 (similar a 3.0.1).
+**Includes**:
+- Add constant `BOOK_VERSION_EPUB32` in `src/Core/EPub.php`.
+- Adjust logic in `Opf.php` and `EPub.php` to handle 3.2 (similar to 3.0.1).
 
-**No incluye**:
-- Soporte de nuevas features avanzadas de CSS/fuentes, solo estructura básica.
+**Does not include**:
+- Support for new advanced CSS/font features, only basic structure.
 
-## Contrato funcional
+## Functional Contract
 
-### Entradas
+### Inputs
 - `new EPub(EPub::BOOK_VERSION_EPUB32, ...)`
 
-### Salidas
-- Archivo `.epub` válido 3.2.
+### Outputs
+- Valid 3.2 `.epub` file.
 
-## Plan de implementación
+## Implementation Plan
 
-1. Añadir constante `BOOK_VERSION_EPUB32 = '3.2'`.
-2. Actualizar condiciones en `Opf.php` para incluir 3.2 en la lógica de prefijos y metadatos.
-3. Validar.
+1. Add constant `BOOK_VERSION_EPUB32 = '3.2'`.
+2. Update conditions in `Opf.php` to include 3.2 in prefix and metadata logic.
+3. Validate.
 
-## Criterios de aceptación (checklist verificable)
+## Acceptance Criteria (verifiable checklist)
 
-- [x] Instancia con versión 3.2.
+- [x] Instance with version 3.2.
 - [x] OPF `version="3.2"`.
 - [x] `epubcheck` OK.
 
-## Pruebas
+## Tests
 
-- Test de integración.
+- Integration test.

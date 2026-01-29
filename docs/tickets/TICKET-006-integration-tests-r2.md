@@ -1,48 +1,48 @@
 # Ticket: release_TICKET-006_Integration-Tests-R2
 
-> Regla: este ticket debe ser ejecutable **sin interpretación**. Si un campo no se puede responder, el ticket debe marcarse como **BLOQUEADO** y explicitar qué falta.
+> Rule: this ticket must be executable **without interpretation**. If a field cannot be answered, the ticket must be marked as **BLOCKED** and explicitly state what is missing.
 
-## Estado
+## Status
 
 - [x] Ready
-- [ ] BLOQUEADO (explicar por qué)
+- [ ] BLOCKED (explain why)
 
-## Contexto
+## Context
 
-Con la introducción de soporte para EPUB 3.0.1 y 3.1, es necesario actualizar la suite de pruebas de integración para asegurar que estas versiones se generan y validan correctamente en el pipeline de CI.
+With the introduction of support for EPUB 3.0.1 and 3.1, it is necessary to update the integration test suite to ensure that these versions are generated and validated correctly in the CI pipeline.
 
-## Objetivo (medible)
+## Objective (measurable)
 
-- Tener tests de integración ejecutables que cubran EPUB 3.0.1 y 3.1.
-- Integrar estos tests en el comando `composer ci`.
+- Have executable integration tests covering EPUB 3.0.1 and 3.1.
+- Integrate these tests into the `composer ci` command.
 
-## Alcance
+## Scope
 
-**Incluye**:
-- Modificar `tests/Integration/EpubCheckIntegrationTest.php` para iterar sobre las nuevas versiones.
-- Asegurar que `EpubAdapter` acepta y procesa correctamente los parámetros de versión.
+**Includes**:
+- Modify `tests/Integration/EpubCheckIntegrationTest.php` to iterate over the new versions.
+- Ensure that `EpubAdapter` accepts and correctly processes version parameters.
 
-**No incluye**:
-- Nuevos features funcionales, solo cobertura de tests.
+**Does not include**:
+- New functional features, only test coverage.
 
-## Contrato funcional
+## Functional Contract
 
-### Entradas
-- Ejecución de `phpunit`.
+### Inputs
+- `phpunit` execution.
 
-### Salidas
-- Reporte de tests en verde para todas las versiones.
+### Outputs
+- Green test report for all versions.
 
-## Plan de implementación
+## Implementation Plan
 
-1. Actualizar `EpubCheckIntegrationTest.php`: añadir data provider o métodos de test para 3.0.1 y 3.1.
-2. Ejecutar tests localmente y verificar logs de `epubcheck`.
+1. Update `EpubCheckIntegrationTest.php`: add data provider or test methods for 3.0.1 and 3.1.
+2. Run tests locally and verify `epubcheck` logs.
 
-## Criterios de aceptación (checklist verificable)
+## Acceptance Criteria (verifiable checklist)
 
-- [x] `phpunit` ejecuta validación para 3.0.1 y 3.1.
-- [x] CI en GitHub Actions pasa correctamente.
+- [x] `phpunit` executes validation for 3.0.1 and 3.1.
+- [x] CI in GitHub Actions passes correctly.
 
-## Pruebas
+## Tests
 
-- Ejecutar `composer test` y verificar output.
+- Run `composer test` and verify output.

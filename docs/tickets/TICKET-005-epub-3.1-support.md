@@ -1,55 +1,55 @@
 # Ticket: release_TICKET-005_EPUB-3.1-Support
 
-> Regla: este ticket debe ser ejecutable **sin interpretación**. Si un campo no se puede responder, el ticket debe marcarse como **BLOQUEADO** y explicitar qué falta.
+> Rule: this ticket must be executable **without interpretation**. If a field cannot be answered, the ticket must be marked as **BLOCKED** and explicitly state what is missing.
 
-## Estado
+## Status
 
 - [x] Ready
-- [ ] BLOQUEADO (explicar por qué)
+- [ ] BLOCKED (explain why)
 
-## Contexto
+## Context
 
-EPUB 3.1 introduce cambios más significativos respecto a 3.0/3.0.1. Requiere cambios en metadatos (ej. `dcterms:modified`) y estructura. El objetivo es permitir generar archivos conformes a EPUB 3.1.
+EPUB 3.1 introduces more significant changes compared to 3.0/3.0.1. It requires changes in metadata (e.g., `dcterms:modified`) and structure. The objective is to allow generating files compliant with EPUB 3.1.
 
-## Objetivo (medible)
+## Objective (measurable)
 
-- Permitir configurar la generación para versión "3.1".
-- Generar OPF con `version="3.1"`.
-- Cumplir requisitos específicos de 3.1 verificados por `epubcheck`.
+- Allow configuring generation for version "3.1".
+- Generate OPF with `version="3.1"`.
+- Comply with specific 3.1 requirements verified by `epubcheck`.
 
-## Alcance
+## Scope
 
-**Incluye**:
-- Añadir constante `BOOK_VERSION_EPUB31` en `src/Core/EPub.php`.
-- Ajustar generación de metadatos en `Opf.php` si la versión es >= 3.1 (ej. asegurar `dcterms:modified`).
-- Revisar si NCX se debe omitir o mantener (en 3.1 es opcional, pero Nav Document es obligatorio).
+**Includes**:
+- Add constant `BOOK_VERSION_EPUB31` in `src/Core/EPub.php`.
+- Adjust metadata generation in `Opf.php` if version is >= 3.1 (e.g., ensure `dcterms:modified`).
+- Review if NCX should be omitted or kept (in 3.1 it is optional, but Nav Document is mandatory).
 
-**No incluye**:
-- Soporte completo de todas las nuevas features de 3.1, solo lo necesario para validación estructural básica.
+**Does not include**:
+- Full support of all new 3.1 features, only what is necessary for basic structural validation.
 
-## Contrato funcional
+## Functional Contract
 
-### Entradas
+### Inputs
 - `new EPub(EPub::BOOK_VERSION_EPUB31, ...)`
 
-### Salidas
-- Archivo `.epub` válido 3.1.
+### Outputs
+- Valid 3.1 `.epub` file.
 
-### Reglas de negocio
-- Si versión es 3.1, asegurar presencia de `dcterms:modified` en metadatos.
+### Business Rules
+- If version is 3.1, ensure presence of `dcterms:modified` in metadata.
 
-## Plan de implementación
+## Implementation Plan
 
-1. Añadir constante `BOOK_VERSION_EPUB31 = '3.1'`.
-2. En `Opf.php`, al generar metadatos, si versión es 3.1, asegurar formato correcto de fechas y atributos requeridos.
-3. Validar comportamiento con `epubcheck`.
+1. Add constant `BOOK_VERSION_EPUB31 = '3.1'`.
+2. In `Opf.php`, when generating metadata, if version is 3.1, ensure correct date format and required attributes.
+3. Validate behavior with `epubcheck`.
 
-## Criterios de aceptación (checklist verificable)
+## Acceptance Criteria (verifiable checklist)
 
-- [x] Se puede instanciar `EPub` con versión 3.1.
-- [x] El OPF tiene `version="3.1"`.
-- [x] `epubcheck` pasa sin errores fatales.
+- [x] `EPub` can be instantiated with version 3.1.
+- [x] The OPF has `version="3.1"`.
+- [x] `epubcheck` passes without fatal errors.
 
-## Pruebas
+## Tests
 
-- Test de integración generando EPUB 3.1.
+- Integration test generating EPUB 3.1.

@@ -1,32 +1,32 @@
-Plan Release 1 - Soporte inicial y seguridad
+# Release 1 Plan - Initial Support and Security
 
-Objetivos principales
-- Asegurar que la generación de EPUB funcione correctamente y cumpla con EPUB 3.0 (prioridad) y EPUB 2.0.1.
-- Corregir problemas de seguridad críticos y dependencias.
-- Establecer CI que ejecute las pruebas (Unit + Integration) usando epubcheck en runner (Ubuntu) con Java o paquete `epubcheck`.
+## Main Objectives
+- Ensure EPUB generation works correctly and complies with EPUB 3.0 (priority) and EPUB 2.0.1.
+- Fix critical security issues and dependencies.
+- Establish CI that runs tests (Unit + Integration) using epubcheck on runner (Ubuntu) with Java or `epubcheck` package.
 
-Alcance
-- Implementación y pruebas para: EPUB 3.0, EPUB 2.0.1, AZW3 (soporte de lectura/generación básica), eliminar KFX (descartado).
-- Idiomas iniciales: es, en, pt, fr.
+## Scope
+- Implementation and tests for: EPUB 3.0, EPUB 2.0.1, AZW3 (basic reading/generation support), remove KFX (discarded).
+- Initial languages: es, en, pt, fr.
 
-Entregables
-- Tests automatizados (Unit + Integration) que generen un EPUB desde HTML y validen con epubcheck.
-- Pipeline CI en GitHub Actions para PHP 8.2..8.5 que instale epubcheck (apt o jar) y ejecute `composer ci`.
-- Documentación: docs/plan, docs/report, docs/tickets.
+## Deliverables
+- Automated tests (Unit + Integration) that generate an EPUB from HTML and validate with epubcheck.
+- CI pipeline in GitHub Actions for PHP 8.2..8.5 that installs epubcheck (apt or jar) and runs `composer ci`.
+- Documentation: docs/plan, docs/report, docs/tickets.
 
-Prioridades
-1. Seguridad y EPUB 3.0
-2. Internacionalización (idiomas indicados)
-3. Soporte adicional de formatos (AZW3)
+## Priorities
+1. Security and EPUB 3.0
+2. Internationalization (indicated languages)
+3. Additional format support (AZW3)
 
-Fechas estimadas
-- Fase 1 (2 semanas): correcciones críticas, CI básico y validación EPUB 3.0
-- Fase 2 (2 semanas): pruebas multi-idioma, mejoras de estabilidad
-- Fase 3 (4 semanas): soporte AZW3 y empaquetado adicional
+## Estimated Dates
+- Phase 1 (2 weeks): critical fixes, basic CI, and EPUB 3.0 validation
+- Phase 2 (2 weeks): multi-language testing, stability improvements
+- Phase 3 (4 weeks): AZW3 support and additional packaging
 
-Riesgos
-- Dependencia en herramientas externas (epubcheck, java, calibre) — CI debe tener reproducible imagen con epubcheck.
-- Código legacy con deuda técnica (muchos avisos phpstan y reglas phpcs relajadas).
+## Risks
+- Dependency on external tools (epubcheck, java, calibre) — CI must have a reproducible image with epubcheck.
+- Legacy code with technical debt (many phpstan warnings and relaxed phpcs rules).
 
-Notas
-- Se ha generado un `phpstan-baseline.neon` para silenciar problemas preexistentes; la deuda técnica debe abordarse en releases posteriores.
+## Notes
+- A `phpstan-baseline.neon` has been generated to silence pre-existing issues; technical debt should be addressed in subsequent releases.

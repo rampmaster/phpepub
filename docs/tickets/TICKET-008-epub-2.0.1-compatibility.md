@@ -1,49 +1,49 @@
 # Ticket: release_TICKET-008_EPUB-2.0.1-Compatibility
 
-> Regla: este ticket debe ser ejecutable **sin interpretación**. Si un campo no se puede responder, el ticket debe marcarse como **BLOQUEADO** y explicitar qué falta.
+> Rule: this ticket must be executable **without interpretation**. If a field cannot be answered, the ticket must be marked as **BLOCKED** and explicitly state what is missing.
 
-## Estado
+## Status
 
 - [x] Ready
-- [ ] BLOQUEADO (explicar por qué)
+- [ ] BLOCKED (explain why)
 
-## Contexto
+## Context
 
-Aunque EPUB 2.0.1 es legacy, muchos lectores antiguos lo requieren. Actualmente el adaptador intenta generar XHTML válido, pero si se inyecta contenido HTML5 (ej. `<section>`, `<nav>`, atributos `epub:type`), la validación 2.0.1 fallará porque el DTD de XHTML 1.1 no los soporta.
+Although EPUB 2.0.1 is legacy, many older readers require it. Currently, the adapter attempts to generate valid XHTML, but if HTML5 content is injected (e.g., `<section>`, `<nav>`, `epub:type` attributes), 2.0.1 validation will fail because the XHTML 1.1 DTD does not support them.
 
-## Objetivo (medible)
+## Objective (measurable)
 
-- Asegurar que cuando se solicita versión 2.0.1, el contenido HTML se limpia de tags/atributos exclusivos de HTML5/EPUB3.
+- Ensure that when version 2.0.1 is requested, HTML content is cleaned of HTML5/EPUB3 exclusive tags/attributes.
 
-## Alcance
+## Scope
 
-**Incluye**:
-- Modificar `EpubAdapter::convertToXhtml`: si la versión destino es 2.0.1, usar un proceso de limpieza más estricto (ej. convertir `<section>` a `<div>`, eliminar `epub:*` attributes).
+**Includes**:
+- Modify `EpubAdapter::convertToXhtml`: if the target version is 2.0.1, use a stricter cleaning process (e.g., convert `<section>` to `<div>`, remove `epub:*` attributes).
 
-**No incluye**:
-- Conversión compleja de CSS3 a CSS2.
+**Does not include**:
+- Complex CSS3 to CSS2 conversion.
 
-## Contrato funcional
+## Functional Contract
 
-### Entradas
+### Inputs
 - `EpubAdapter::generate(['version' => '2.0', 'content' => '<section epub:type="chapter">...</section>'])`
 
-### Salidas
-- XHTML generado: `<div>...</div>` (sin atributos epub).
+### Outputs
+- Generated XHTML: `<div>...</div>` (without epub attributes).
 
-## Plan de implementación
+## Implementation Plan
 
-1. En `EpubAdapter`, pasar la versión objetivo a `convertToXhtml`.
-2. Si es 2.0, aplicar transformación:
+1. In `EpubAdapter`, pass the target version to `convertToXhtml`.
+2. If it is 2.0, apply transformation:
     - Strip `epub:` attributes.
-    - Rename HTML5 tags (`article`, `section`, `nav`, `header`, `footer`) a `div` o `span`.
-3. Verificar con `epubcheck`.
+    - Rename HTML5 tags (`article`, `section`, `nav`, `header`, `footer`) to `div` or `span`.
+3. Verify with `epubcheck`.
 
-## Criterios de aceptación (checklist verificable)
+## Acceptance Criteria (verifiable checklist)
 
-- [x] Input con tags HTML5 genera EPUB 2.0.1 válido.
-- [x] `epubcheck` no reporta errores de DTD.
+- [x] Input with HTML5 tags generates valid EPUB 2.0.1.
+- [x] `epubcheck` reports no DTD errors.
 
-## Pruebas
+## Tests
 
-- Test unitario con snippet HTML5 -> XHTML 1.1.
+- Unit test with HTML5 -> XHTML 1.1 snippet.
