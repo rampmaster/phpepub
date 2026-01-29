@@ -31,6 +31,11 @@ class EpubAdapter implements FormatAdapterInterface
             @mkdir($buildDir, 0775, true);
         }
 
+        // Validate build directory is inside the repository
+        if (!FileHelper::isSafeBuildDir($buildDir)) {
+            throw new \RuntimeException('Build directory is not inside repository root: ' . $buildDir);
+        }
+
         $book = new EPub($version, $language);
         $book->setTitle($title);
         if ($author) {
@@ -48,9 +53,31 @@ class EpubAdapter implements FormatAdapterInterface
         foreach ($chapters as $chapter) {
             $cname = $chapter['name'] ?? ('Chapter ' . $i);
             $cfile = $chapter['file'] ?? ('chapter' . $i . '.xhtml');
+            // Reject excessively long file names
+            if (strlen($cfile) > 255) {
+                throw new \RuntimeException('Chapter file name too long');
+            }
             $ccontent = '';
-            if (!empty($chapter['path']) && is_file($chapter['path'])) {
-                $ccontent = file_get_contents($chapter['path']);
+            if (!empty($chapter['path'])) {
+                $path = $chapter['path'];
+                // Reject file:// URIs
+                if (str_starts_with($path, 'file://')) {
+                    throw new \RuntimeException('file:// URIs are not allowed for chapter paths');
+                }
+                // Reject remote URLs — require content or a local repo path
+                if (preg_match('#^https?://#i', $path)) {
+                    throw new \RuntimeException('Remote URLs are not allowed as chapter paths');
+                }
+                if (is_file($path)) {
+                    // Ensure the source path is inside the repository (prevent path traversal / external files)
+                    $repoRoot = dirname(__DIR__, 3);
+                    if (!FileHelper::isPathInside($path, $repoRoot)) {
+                        throw new \RuntimeException('Chapter path is outside repository: ' . $path);
+                    }
+                    $ccontent = file_get_contents($path);
+                } else {
+                    throw new \RuntimeException('Chapter path does not exist or is not a file: ' . $path);
+                }
             } elseif (!empty($chapter['content'])) {
                 $ccontent = $chapter['content'];
             } else {
@@ -58,7 +85,7 @@ class EpubAdapter implements FormatAdapterInterface
             }
 
             // Ensure content is XHTML-like and include chapter title in <title>
-            $ccontent = $this->convertToXhtml($ccontent, $language, $cname);
+            $ccontent = $this->convertToXhtml($ccontent, $language, $cname, $version);
 
             $book->addChapter($cname, $cfile, $ccontent);
             $i++;
@@ -237,7 +264,7 @@ class EpubAdapter implements FormatAdapterInterface
     /**
      * Convert HTML content to valid XHTML for EPUB.
      */
-    private function convertToXhtml(string $content, string $language = 'en', string $title = ''): string
+    private function convertToXhtml(string $content, string $language = 'en', string $title = '', string $version = EPub::BOOK_VERSION_EPUB3): string
     {
         // Quick path: if snippet has no HTML root, treat as body fragment
         $isFragment = (stripos($content, '<html') === false);
@@ -301,6 +328,11 @@ class EpubAdapter implements FormatAdapterInterface
             }
         }
 
+        // If version is EPUB 2.0.1, strip HTML5 specific tags and attributes
+        if ($version === EPub::BOOK_VERSION_EPUB2) {
+            $this->cleanHtml5ForEpub2($x);
+        }
+
         // Restore libxml state
         libxml_clear_errors();
         libxml_use_internal_errors($libxmlState);
@@ -308,5 +340,79 @@ class EpubAdapter implements FormatAdapterInterface
         // Return serialized XHTML with XML declaration
         $xml = $x->saveXML();
         return $xml;
+    }
+
+    /**
+     * Removes HTML5 tags and attributes that are not valid in XHTML 1.1 (EPUB 2.0.1).
+     */
+    private function cleanHtml5ForEpub2(\DOMDocument $doc): void
+    {
+        $xpath = new \DOMXPath($doc);
+
+        // 1. Remove 'epub:' attributes (e.g. epub:type)
+        // Note: DOMDocument might not handle namespaces perfectly without registration,
+        // but we can iterate all elements and attributes.
+        foreach ($xpath->query('//*') as $element) {
+            if ($element instanceof \DOMElement) {
+                // Check attributes
+                // We need to collect attributes to remove first to avoid modification during iteration issues
+                $attrsToRemove = [];
+                foreach ($element->attributes as $attr) {
+                    if ($attr->prefix === 'epub') {
+                        $attrsToRemove[] = $attr;
+                    }
+                    // Also remove 'charset' attribute from meta tags if present (except for content-type which is handled differently)
+                    // The error message says: attribute "charset" not allowed here
+                    if ($attr->nodeName === 'charset') {
+                        $attrsToRemove[] = $attr;
+                    }
+                    // Remove 'epub:type' specifically if prefix check fails (sometimes DOMDocument is tricky with namespaces)
+                    if ($attr->nodeName === 'epub:type') {
+                        $attrsToRemove[] = $attr;
+                    }
+                }
+                foreach ($attrsToRemove as $attr) {
+                    $element->removeAttributeNode($attr);
+                }
+            }
+        }
+
+        // 2. Rename HTML5 structural elements to div or span
+        // List of HTML5 tags to convert to div
+        $blockTags = ['section', 'nav', 'article', 'aside', 'header', 'footer', 'main', 'figure', 'figcaption'];
+        // List of HTML5 tags to convert to span (inline) - mostly time, mark
+        $inlineTags = ['time', 'mark'];
+
+        foreach ($blockTags as $tagName) {
+            $nodes = $doc->getElementsByTagName($tagName);
+            // Iterate backwards or collect first to avoid live list issues
+            $nodesArray = iterator_to_array($nodes);
+            foreach ($nodesArray as $node) {
+                $this->renameElement($node, 'div');
+            }
+        }
+
+        foreach ($inlineTags as $tagName) {
+            $nodes = $doc->getElementsByTagName($tagName);
+            $nodesArray = iterator_to_array($nodes);
+            foreach ($nodesArray as $node) {
+                $this->renameElement($node, 'span');
+            }
+        }
+    }
+
+    private function renameElement(\DOMElement $element, string $newName): void
+    {
+        $newElement = $element->ownerDocument->createElement($newName);
+        // Copy attributes
+        foreach ($element->attributes as $attribute) {
+            $newElement->setAttribute($attribute->nodeName, $attribute->nodeValue);
+        }
+        // Move children
+        while ($element->firstChild) {
+            $newElement->appendChild($element->firstChild);
+        }
+        // Replace
+        $element->parentNode->replaceChild($newElement, $element);
     }
 }

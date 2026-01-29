@@ -1,85 +1,85 @@
 # Ticket: release_TICKET-002_EPUB3-Validation
 
-> Regla: este ticket debe ser ejecutable **sin interpretación**. Si un campo no se puede responder, el ticket debe marcarse como **BLOQUEADO** y explicitar qué falta.
+> Rule: this ticket must be executable **without interpretation**. If a field cannot be answered, the ticket must be marked as **BLOCKED** and explicitly state what is missing.
 
-## Estado
+## Status
 
-- [ ] Ready
-- [ ] BLOQUEADO (explicar por qué)
+- [x] Ready
+- [ ] BLOCKED (explain why)
 
-## Contexto
+## Context
 
-El proyecto debe generar EPUBs válidos para EPUB 3.0 y EPUB 2.0.1 y validar automáticamente los artefactos con `epubcheck`. Durante la integración se detectaron casos donde el contenido HTML (DOCTYPE HTML5, falta de namespace XHTML) provocaba errores de validación.
+The project must generate valid EPUBs for EPUB 3.0 and EPUB 2.0.1 and automatically validate artifacts with `epubcheck`. During integration, cases were detected where HTML content (HTML5 DOCTYPE, missing XHTML namespace) caused validation errors.
 
-## Objetivo (medible)
+## Objective (measurable)
 
-- Garantizar que la generación de capítulos produce documentos XHTML bien formados que pasen `epubcheck`.
-- Añadir tests de integración que generen y validen artefactos para EPUB 3.0 y EPUB 2.0.1.
+- Guarantee that chapter generation produces well-formed XHTML documents that pass `epubcheck`.
+- Add integration tests that generate and validate artifacts for EPUB 3.0 and EPUB 2.0.1.
 
-## Alcance
+## Scope
 
-**Incluye**:
-- Revisar y ajustar `EpubAdapter::convertToXhtml()` para convertir HTML5 o fragmentos a XHTML válido.
-- Asegurar que cada capítulo tenga `<title>` en `<head>` y `xml:lang`/`lang`.
-- Añadir/ajustar tests de integración `tests/Integration/EpubCheckIntegrationTest.php`.
-- Configurar CI para ejecutar epubcheck y fallar en errores fatales.
+**Includes**:
+- Review and adjust `EpubAdapter::convertToXhtml()` to convert HTML5 or fragments to valid XHTML.
+- Ensure each chapter has `<title>` in `<head>` and `xml:lang`/`lang`.
+- Add/adjust integration tests `tests/Integration/EpubCheckIntegrationTest.php`.
+- Configure CI to run epubcheck and fail on fatal errors.
 
-**No incluye**:
-- Reconstrucción de toda la lógica OPF/NCX; se harán parches y tests.
+**Does not include**:
+- Reconstruction of all OPF/NCX logic; patches and tests will be made.
 
-## Contrato funcional
+## Functional Contract
 
-### Entradas
-- Configuración de generación: `title`, `language`, `chapters[]` (path o content).
+### Inputs
+- Generation configuration: `title`, `language`, `chapters[]` (path or content).
 
-### Salidas
-- Archivo .epub generado en `build` o `tests/build`.
-- Salida de `epubcheck` (logs) como parte del job.
+### Outputs
+- .epub file generated in `build` or `tests/build`.
+- `epubcheck` output (logs) as part of the job.
 
-### Reglas de negocio
-- Si `epubcheck` devuelve error fatal, el pipeline de CI debe fallar para esa job.
+### Business Rules
+- If `epubcheck` returns a fatal error, the CI pipeline must fail for that job.
 
-### Errores esperados / validaciones
-- Casos donde HTML no es bien formado y requiere corrección automática por el adaptador.
+### Expected Errors / Validations
+- Cases where HTML is not well-formed and requires automatic correction by the adapter.
 
-## Datos
+## Data
 
-- Entidades: artifacts EPUB, capítulos (XHTML content).
-- No hay migraciones.
+- Entities: EPUB artifacts, chapters (XHTML content).
+- No migrations.
 
-## Permisos
+## Permissions
 
-- No aplica.
+- Not applicable.
 
 ## UX/UI
 
-- No aplica.
+- Not applicable.
 
-## Plan de implementación
+## Implementation Plan
 
-1. Confirmar tests actuales y fixtures que reproducen el fallo (tests/Unit fixtures).
-2. Ajustar `convertToXhtml()` (ya implementado con DOMDocument) para asegurar título y lang.
-3. Extender `EpubAdapter::validate()` para localizar OPF via `META-INF/container.xml`.
-4. Ejecutar tests de integración en CI y validar comportamiento.
+1. Confirm current tests and fixtures reproducing the failure (tests/Unit fixtures).
+2. Adjust `convertToXhtml()` (already implemented with DOMDocument) to ensure title and lang.
+3. Extend `EpubAdapter::validate()` to locate OPF via `META-INF/container.xml`.
+4. Run integration tests in CI and validate behavior.
 
-## Criterios de aceptación (checklist verificable)
+## Acceptance Criteria (verifiable checklist)
 
-- [ ] Tests Integration pasan en la matrix PHP (8.2..8.5) sin errores fatales de epubcheck.
-- [ ] Todos los capítulos generados contienen `<title>` y atributos `lang`.
+- [x] Integration tests pass in PHP matrix (8.2..8.5) without fatal epubcheck errors.
+- [x] All generated chapters contain `<title>` and `lang` attributes.
 
-## Pruebas
+## Tests
 
 - Happy path:
-  - Generar EPUB desde fixture HTML y comprobar que `epubcheck` no reporta errores.
+  - Generate EPUB from HTML fixture and check that `epubcheck` reports no errors.
 - Edge case:
-  - HTML fragment con doctype HTML5 debe convertirse a XHTML válido.
+  - HTML fragment with HTML5 doctype must be converted to valid XHTML.
 
-## Checklist de entrega
+## Delivery Checklist
 
-- [ ] Docs actualizada
-- [ ] Tests en verde
-- [ ] Workflow CI configurado para ejecutar epubcheck
+- [x] Docs updated
+- [x] Tests green
+- [x] CI workflow configured to run epubcheck
 
-## Referencias
+## References
 - `src/Core/Format/EpubAdapter.php`
 - `tests/Integration/EpubCheckIntegrationTest.php`

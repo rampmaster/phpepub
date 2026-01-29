@@ -1,83 +1,83 @@
 # Ticket: release_TICKET-003_CI-Setup-EPUBCheck
 
-> Regla: este ticket debe ser ejecutable **sin interpretación**. Si un campo no se puede responder, el ticket debe marcarse como **BLOQUEADO** y explicitar qué falta.
+> Rule: this ticket must be executable **without interpretation**. If a field cannot be answered, the ticket must be marked as **BLOCKED** and explicitly state what is missing.
 
-## Estado
+## Status
 
-- [ ] Ready
-- [ ] BLOQUEADO (explicar por qué)
+- [x] Ready
+- [ ] BLOCKED (explain why)
 
-## Contexto
+## Context
 
-Actualmente las pruebas de integración usan `epubcheck` localmente y hay una intención de ejecutar la matriz de PHP en CI (8.2..8.5). El repo ya incluye tests Unit/Integration y scripts composer (`ci`). Falta un workflow reproducible que instale Java/epubcheck, ejecute `composer ci` y suba artefactos `tests/build`.
+Currently, integration tests use `epubcheck` locally, and there is an intention to run the PHP matrix in CI (8.2..8.5). The repo already includes Unit/Integration tests and composer scripts (`ci`). A reproducible workflow is missing that installs Java/epubcheck, runs `composer ci`, and uploads `tests/build` artifacts.
 
-Origen: roadmap Release 1 — TICKET-002 y correcciones previas en `EpubAdapter` y comandos de consola.
+Origin: Release 1 roadmap — TICKET-002 and previous fixes in `EpubAdapter` and console commands.
 
-## Objetivo (medible)
+## Objective (measurable)
 
-- Proveer un GitHub Actions workflow que ejecute la matriz PHP 8.2, 8.3, 8.4 y 8.5 y valide que:
-  - `composer install` funciona y las dependencias dev se instalan.
-  - `composer run-script ci` completa con tests Unit e Integration que validen creación y verificación con `epubcheck`.
-- Artefactos `tests/build/*.epub` deben subirse como artifacts (cuando los tests fallan o opcionalmente cuando pasan) para inspección.
+- Provide a GitHub Actions workflow that runs the PHP matrix 8.2, 8.3, 8.4, and 8.5 and validates that:
+  - `composer install` works and dev dependencies are installed.
+  - `composer run-script ci` completes with Unit and Integration tests validating creation and verification with `epubcheck`.
+- `tests/build/*.epub` artifacts must be uploaded as artifacts (when tests fail or optionally when they pass) for inspection.
 
-Métrica de éxito: workflow aprobado y green en al menos 3/4 versiones (8.2..8.5) en un runner Ubuntu reproducible.
+Success metric: workflow approved and green in at least 3/4 versions (8.2..8.5) on a reproducible Ubuntu runner.
 
-## Alcance
+## Scope
 
-**Incluye**:
-- Crear `.github/workflows/ci.yml` con matrix PHP 8.2..8.5.
-- Instalar Java y `epubcheck` (preferible apt si existe, fallback descargar JAR a `/opt/epubcheck`).
-- Ejecutar `composer install --no-interaction --prefer-dist` y `composer run-script ci`.
-- Subida de artifacts desde `tests/build`.
-- Documentar pasos y variables de entorno necesarias.
+**Includes**:
+- Create `.github/workflows/ci.yml` with PHP matrix 8.2..8.5.
+- Install Java and `epubcheck` (apt preferred if it exists, fallback download JAR to `/opt/epubcheck`).
+- Run `composer install --no-interaction --prefer-dist` and `composer run-script ci`.
+- Upload artifacts from `tests/build`.
+- Document steps and necessary environment variables.
 
-**No incluye**:
-- Migración completa del proyecto a PSR-12 ni refactor de deuda técnica (ya se gestionó con baseline y reglas temporales).
-- Soporte de KFX (descartado) o conversión de AZW3 en CI (queda para release siguiente).
+**Does not include**:
+- Complete migration of the project to PSR-12 or refactor of technical debt (already managed with baseline and temporary rules).
+- KFX support (discarded) or AZW3 conversion in CI (left for next release).
 
-## Contrato funcional
+## Functional Contract
 
-### Entradas
-- Repositorio con código (branch de PR) y `composer.json` con scripts.
-- Variables opcionales de workflow: `EPUBCHECK_INSTALL_METHOD` (apt|jar), `UPLOAD_ARTIFACTS` (true|false).
+### Inputs
+- Repository with code (PR branch) and `composer.json` with scripts.
+- Optional workflow variables: `EPUBCHECK_INSTALL_METHOD` (apt|jar), `UPLOAD_ARTIFACTS` (true|false).
 
-### Salidas
-- Estado del workflow (success/fail) por versión de PHP.
-- Artifacts: `tests/build/*.epub` subidos para inspección.
-- Logs de `epubcheck` y PHPUnit guardados en job logs.
+### Outputs
+- Workflow status (success/fail) per PHP version.
+- Artifacts: `tests/build/*.epub` uploaded for inspection.
+- `epubcheck` and PHPUnit logs saved in job logs.
 
-### Reglas de negocio
-- Si `epubcheck` devuelve errores fatales (epubcheck exit non-zero), el job debe fallar.
-- Advertencias de epubcheck pueden ser permitidas (configurable) — por defecto NO hacen fallar.
+### Business Rules
+- If `epubcheck` returns fatal errors (epubcheck exit non-zero), the job must fail.
+- Epubcheck warnings can be allowed (configurable) — by default they DO NOT cause failure.
 
-### Errores esperados / validaciones
-- Failing: `composer install` falla por dependencias — mark as infra error.
-- Failing: `epubcheck` no encontrado y el método `EPUBCHECK_INSTALL_METHOD` no se aplica — job falla.
+### Expected Errors / Validations
+- Failing: `composer install` fails due to dependencies — mark as infra error.
+- Failing: `epubcheck` not found and `EPUBCHECK_INSTALL_METHOD` method does not apply — job fails.
 
-## Datos
+## Data
 
-- Entidades involucradas: artefacto EPUB generado (archivo `.epub`), logs de prueba.
-- No hay cambios en base de datos.
+- Involved entities: generated EPUB artifact (`.epub` file), test logs.
+- No database changes.
 - No migrations.
 
-## Permisos
+## Permissions
 
-- El workflow será público en el repo; no requiere secretos especiales, salvo si decides almacenar JAR privado (no recomendado).
+- The workflow will be public in the repo; requires no special secrets, unless storing private JAR (not recommended).
 
 ## UX/UI
 
-- No aplica UI.
+- No UI applies.
 
-## Plan de implementación
+## Implementation Plan
 
-1. Crear el workflow `.github/workflows/ci.yml` con matrix PHP: [8.2,8.3,8.4,8.5].
-2. En cada job: instalar PHP usando actions/setup-php, instalar Java (`openjdk-17`) y opcionalmente `epubcheck` con `apt-get install epubcheck` o descargar el JAR en `/opt/epubcheck`.
-3. Ejecutar `composer install --no-interaction --prefer-dist`.
-4. Ejecutar `composer run-script ci` (this runs phpcs, phpstan, phpunit).
-5. Si `tests/build` contiene archivos `.epub`, subirlos como artifact (on: always or on: failure).
-6. Documentar variables y cómo ejecutar localmente en README.
+1. Create the workflow `.github/workflows/ci.yml` with PHP matrix: [8.2, 8.3, 8.4, 8.5].
+2. In each job: install PHP using actions/setup-php, install Java (`openjdk-17`) and optionally `epubcheck` with `apt-get install epubcheck` or download the JAR to `/opt/epubcheck`.
+3. Run `composer install --no-interaction --prefer-dist`.
+4. Run `composer run-script ci` (this runs phpcs, phpstan, phpunit).
+5. If `tests/build` contains `.epub` files, upload them as artifact (on: always or on: failure).
+6. Document variables and how to run locally in README.
 
-Fragmento sugerido del workflow (resumen):
+Suggested workflow snippet (summary):
 
 ```yaml
 name: CI
@@ -112,30 +112,30 @@ jobs:
           path: tests/build/*.epub
 ```
 
-(Nota: si `apt-get install epubcheck` falla en algunos runners, fallback descargar jar desde releases y ejecutar con `java -jar /opt/epubcheck/epubcheck.jar`.)
+(Note: if `apt-get install epubcheck` fails on some runners, fallback download jar from releases and run with `java -jar /opt/epubcheck/epubcheck.jar`.)
 
-## Criterios de aceptación (checklist verificable)
+## Acceptance Criteria (verifiable checklist)
 
-- [ ] Workflow `.github/workflows/ci.yml` creado y añadido al repo.
-- [ ] Workflow ejecuta y pasa en al menos una ejecución de la matrix (localmente replicable).
-- [ ] `composer run-script ci` completa sin errores fatales en el job.
-- [ ] Artefactos `tests/build/*.epub` se suben como artifacts.
+- [x] Workflow `.github/workflows/ci.yml` created and added to the repo.
+- [x] Workflow runs and passes in at least one execution of the matrix (locally replicable).
+- [x] `composer run-script ci` completes without fatal errors in the job.
+- [x] Artifacts `tests/build/*.epub` are uploaded as artifacts.
 
-## Pruebas
+## Tests
 
 - Happy path:
-  - Crear PR, workflow corre en ubuntu-latest con PHP 8.4, composer install OK, composer ci OK, artifact subido.
+  - Create PR, workflow runs on ubuntu-latest with PHP 8.4, composer install OK, composer ci OK, artifact uploaded.
 - Edge case:
-  - Runner sin apt `epubcheck`: el job debe intentar descargar el JAR y usar `java -jar`.
-  - `epubcheck` devuelve non-zero: job falla y artifact subido para inspección.
+  - Runner without apt `epubcheck`: the job must try to download the JAR and use `java -jar`.
+  - `epubcheck` returns non-zero: job fails and artifact uploaded for inspection.
 
-## Checklist de entrega
+## Delivery Checklist
 
-- [ ] Docs actualizada (`docs/tickets/TICKET-003-ci-setup-epubcheck.md`)
-- [ ] Workflow `.github/workflows/ci.yml` creado y probado en branch
-- [ ] Tests en verde en CI (o fallos controlados con artifacts)
+- [x] Docs updated (`docs/tickets/TICKET-003-ci-setup-epubcheck.md`)
+- [x] Workflow `.github/workflows/ci.yml` created and tested in branch
+- [x] Tests green in CI (or controlled failures with artifacts)
 
-## Referencias
+## References
 - `docs/plan/release-1-plan.md`
 - `tests/Integration/EpubCheckIntegrationTest.php`
 - `composer.json` scripts: `ci`, `phpcs`, `phpstan`, `test`
@@ -143,4 +143,4 @@ jobs:
 
 ---
 
-Si confirmas, creo el archivo de workflow `.github/workflows/ci.yml` en un branch y lo pruebo localmente (simulando ejecuciones relevantes). ¿Procedo a crear el workflow ya y ejecutar una prueba local (en este entorno) para validar?
+If confirmed, I create the workflow file `.github/workflows/ci.yml` in a branch and test it locally (simulating relevant executions). Proceed to create the workflow now and run a local test (in this environment) to validate?

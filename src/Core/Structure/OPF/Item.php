@@ -23,6 +23,8 @@ class Item
 
     private $properties = null;
 
+    private $mediaOverlay = null;
+
     private $requiredNamespace = null;
 
     private $requiredModules = null;
@@ -94,6 +96,16 @@ class Item
     }
 
     /**
+     * Set the media-overlay attribute.
+     *
+     * @param string $mediaOverlayId The ID of the SMIL file.
+     */
+    public function setMediaOverlay($mediaOverlayId)
+    {
+        $this->mediaOverlay = is_string($mediaOverlayId) ? trim($mediaOverlayId) : null;
+    }
+
+    /**
      * Class destructor
      *
      * @return void
@@ -157,8 +169,11 @@ class Item
     public function finalize($bookVersion = EPub::BOOK_VERSION_EPUB2)
     {
         $item = "\t\t<item id=\"" . $this->id . "\" href=\"" . $this->href . "\" media-type=\"" . $this->mediaType . "\" ";
-        if ($bookVersion === EPub::BOOK_VERSION_EPUB3 && isset($this->properties)) {
+        if (($bookVersion === EPub::BOOK_VERSION_EPUB3 || $bookVersion === EPub::BOOK_VERSION_EPUB301 || $bookVersion === EPub::BOOK_VERSION_EPUB31 || $bookVersion === EPub::BOOK_VERSION_EPUB32) && isset($this->properties)) {
             $item .= "properties=\"" . $this->properties . "\" ";
+        }
+        if (($bookVersion === EPub::BOOK_VERSION_EPUB3 || $bookVersion === EPub::BOOK_VERSION_EPUB301 || $bookVersion === EPub::BOOK_VERSION_EPUB31 || $bookVersion === EPub::BOOK_VERSION_EPUB32) && isset($this->mediaOverlay)) {
+            $item .= "media-overlay=\"" . $this->mediaOverlay . "\" ";
         }
         if (isset($this->requiredNamespace)) {
             $item .= "\n\t\t\trequired-namespace=\"" . $this->requiredNamespace . "\" ";

@@ -213,4 +213,50 @@ class FileHelper
 
         return $safe;
     }
+
+    /**
+     * Check whether a filesystem path is inside a base directory.
+     * Returns true only if both realpath($path) and realpath($baseDir) exist and
+     * the resolved path is located under the base directory.
+     */
+    public static function isPathInside(string $path, string $baseDir): bool
+    {
+        $rp = @realpath($path);
+        $rb = @realpath($baseDir);
+        // If realpath failed for the path but the path exists or looks absolute, try canonicalize
+        if ($rp === false) {
+            if (file_exists($path) || str_starts_with($path, DIRECTORY_SEPARATOR) || preg_match('#^[A-Za-z]:#', $path)) {
+                $rp = Path::canonicalize($path);
+            }
+        }
+        if ($rb === false) {
+            $rb = Path::canonicalize($baseDir);
+        }
+        // If $rp is still false, it means the path doesn't exist and couldn't be canonicalized as absolute
+        if ($rp === '' || $rb === '') {
+            return false;
+        }
+
+        $rb = rtrim($rb, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        return str_starts_with($rp, $rb);
+    }
+
+    /**
+     * Check whether a build directory is safe (inside repository root).
+     * Project root is inferred relative to this file if not provided.
+     */
+    public static function isSafeBuildDir(string $buildDir, ?string $repoRoot = null): bool
+    {
+        if ($repoRoot === null) {
+            // repo root is four levels up from src/Helpers
+            $repoRoot = dirname(__DIR__, 3);
+        }
+        $rb = @realpath($repoRoot);
+        $bd = @realpath($buildDir);
+        if ($rb === false || $bd === false) {
+            return false;
+        }
+        $rb = rtrim($rb, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        return str_starts_with($bd, $rb);
+    }
 }

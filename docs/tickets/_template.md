@@ -1,92 +1,92 @@
-# Ticket: [fase]_[0000]_[nombre]
+# Ticket: [phase]_[0000]_[name]
 
-> Regla: este ticket debe ser ejecutable **sin interpretación**. Si un campo no se puede responder, el ticket debe marcarse como **BLOQUEADO** y explicitar qué falta.
+> Rule: this ticket must be executable **without interpretation**. If a field cannot be answered, the ticket must be marked as **BLOCKED** and explicitly state what is missing.
 
-## Estado
+## Status
 
 - [ ] Ready
-- [ ] BLOQUEADO (explicar por qué)
+- [ ] BLOCKED (explain why)
 
-## Contexto
+## Context
 
-(¿Qué problema se resuelve? ¿De dónde nace: levantamiento, bug, deuda técnica?)
+(What problem is being solved? Where does it originate: requirements gathering, bug, technical debt?)
 
-## Objetivo (medible)
-
-- 
-- 
-
-## Alcance
-
-**Incluye**:
-- 
-
-**No incluye**:
-- 
-
-## Contrato funcional
-
-### Entradas
-
-- Formularios: 
-- Endpoints (si aplica): 
-
-### Salidas
-
-- Pantallas: 
-- Documentos (PDF, etc.): 
-
-### Reglas de negocio
+## Objective (measurable)
 
 - 
+- 
 
-### Errores esperados / validaciones
+## Scope
+
+**Includes**:
+- 
+
+**Does not include**:
+- 
+
+## Functional Contract
+
+### Inputs
+
+- Forms: 
+- Endpoints (if applicable): 
+
+### Outputs
+
+- Screens: 
+- Documents (PDF, etc.): 
+
+### Business Rules
 
 - 
 
-## Datos
+### Expected Errors / Validations
 
-- Entidades involucradas:
-- Cambios Doctrine: (Sí/No) — si Sí, listar migraciones esperadas
-- Campos nuevos/modificados:
-- Enums/estados:
+- 
 
-## Permisos
+## Data
 
-- Roles con acceso (ver/crear/editar/anular):
-- Restricciones multi-tenant (Company):
+- Involved entities:
+- Doctrine changes: (Yes/No) — if Yes, list expected migrations
+- New/modified fields:
+- Enums/states:
+
+## Permissions
+
+- Roles with access (view/create/edit/void):
+- Multi-tenant restrictions (Company):
 
 ## UX/UI
 
-- Rutas Symfony:
-- Templates Twig:
-- Copy (botones/labels/mensajes):
+- Symfony routes:
+- Twig templates:
+- Copy (buttons/labels/messages):
 
-## Plan de implementación
+## Implementation Plan
 
 1. 
 2. 
 3. 
 
-## Criterios de aceptación (checklist verificable)
+## Acceptance Criteria (verifiable checklist)
 
 - [ ] 
 - [ ] 
 
-## Pruebas
+## Tests
 
 - Happy path:
   - 
 - Edge case:
   - 
 
-## Checklist de entrega
+## Delivery Checklist
 
-- [ ] Docs actualizada
-- [ ] Migraciones ejecutadas
-- [ ] Tests en verde
+- [ ] Docs updated
+- [ ] Migrations executed
+- [ ] Tests green
 
-## Referencias
+## References
 
-- `docs/plan/levantamiento.md`
-- `docs/plan/trazabilidad_levantamiento_vs_implementacion.md`
+- `docs/plan/requirements.md`
+- `docs/plan/traceability.md`

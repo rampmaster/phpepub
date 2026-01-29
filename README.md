@@ -1,96 +1,108 @@
-# PHP ePub generator
+# PHPePub
 
-PHPePub allows a php script to generate ePub Electronic books on the fly, and send them to the user as downloads.
+[![CI](https://github.com/rampmaster/phpepub/actions/workflows/ci.yml/badge.svg)](https://github.com/rampmaster/phpepub/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-LGPL%202.1-blue.svg)](https://opensource.org/licenses/LGPL-2.1)
 
-PHPePub support most of the ePub 2.01 specification, and enough of the new ePub3 specification to make valid ePub 3 books as well.
+**PHPePub** is a PHP library that allows you to generate ePub electronic books on the fly. It supports most of the **EPUB 2.0.1** specification and includes robust support for **EPUB 3.0**, **3.0.1**, **3.1**, and **3.2**, enabling the creation of modern, accessible e-books.
 
-The projects is also hosted on PHPClasses.org at the addresses:
-http://www.phpclasses.org/package/6115
+This project is a modernized fork of the original [grandt/phpepub](https://github.com/Grandt/PHPePub) library, updated for PHP 8.2+ and enhanced with new features like accessibility metadata, media overlays, and AZW3 export capabilities.
 
-PHPePub is meant to be easy to use for small projects, and still allow for comples and complete e-books should the need arise.
+## Features
 
-The Zip.php class in this project originates from http://www.phpclasses.org/package/6110
-
-or on Github: git://github.com/Grandt/PHPZip.git
-
-See the examples for example usage. The php files have "some" doumentation in them in the form of Javadoc style function headers.
+*   **Multi-version Support**: Generate valid EPUB 2.0.1, 3.0, 3.0.1, 3.1, and 3.2 files.
+*   **Accessibility (A11y)**: Built-in methods to add Schema.org accessibility metadata (essential for European Accessibility Act compliance).
+*   **Media Overlays**: Support for SMIL to create "Read Aloud" books with synchronized audio.
+*   **Kindle Support**: Export to AZW3 (Kindle Format 8) using an external converter (Calibre).
+*   **Modern PHP**: Fully compatible with PHP 8.2 and above.
+*   **CI/CD Ready**: Includes GitHub Actions workflows for automated testing and validation with `epubcheck`.
 
 ## Installation
 
-### Import
-Add this requirement to your `composer.json` file:
-```json
-    "grandt/phpepub": ">=4.0.3"
+Install the library via Composer:
+
+```bash
+composer require rampmaster/phpepub
 ```
 
-### Composer
-If you already have Composer installed, skip this part.
+## Basic Usage
 
-[Packagist](https://packagist.org/), the main composer repository has a neat and very short guide.
-Or you can look at the guide at the [Composer site](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx).
- 
-The easiest for first time users, is to have the composer installed in the same directory as your composer.json file, though there are better options.
+Here is a simple example of how to generate an EPUB 3.2 book:
 
-Run this from the command line:
-```
-php -r "readfile('https://getcomposer.org/installer');" | php
-```
-
-This will check your PHP installation, and download the `composer.phar`, which is the composer binary. This file is not needed on the server though.
-
-Once composer is installed you can create the `composer.json` file to import this package.
-```json
-{
-    "require": {
-        "grandt/phpepub": ">=4.0.3",
-        "php": ">=5.3.0"
-    }
-}
-```
-
-Followed by telling Composer to install the dependencies.
-```
-php composer.phar install
-```
-
-this will download and place all dependencies defined in your `composer.json` file in the `vendor` directory.
-
-Finally, you include the `autoload.php` file in the new `vendor` directory.
 ```php
 <?php
-    require 'vendor/autoload.php';
-    .
-    .
-    .
+
+require 'vendor/autoload.php';
+
+use Rampmaster\EPub\Core\EPub;
+
+// Create a new EPUB 3.2 book
+$book = new EPub(EPub::BOOK_VERSION_EPUB32);
+
+// Set mandatory metadata
+$book->setTitle("My First eBook");
+$book->setLanguage("en");
+$book->setIdentifier("http://example.com/books/1", EPub::IDENTIFIER_URI);
+
+// Add an author
+$book->setAuthor("John Doe", "Doe, John");
+
+// Add a chapter
+$content = "<h1>Chapter 1</h1><p>Welcome to my book generated with PHPePub.</p>";
+$book->addChapter("Chapter 1", "chapter1.xhtml", $content);
+
+// Finalize and save
+$book->finalize();
+$book->saveBook("my_book", ".");
+
+echo "Book saved as my_book.epub\n";
 ```
 
-## EPub class documentation
-This class has been designed for ease of use, and to enable ePub book creation on the fly.
+## Advanced Features
 
-The ePub standard contains a lot of parameters that can be set by the user, but in this implementation we are only relying on some of them, the important ones so to speak.
+### Accessibility Metadata
 
-### Mandatory Fields:
-* Title: setTitle(\$title), where \$title is a text string.
-* Language: setLanguage(\$language), where \$language is a RFC3066 Language code, such as "en", "da", "fr" etc. Language is "en" by default.
-* Identifier: setIdentifier(\$identifier, \$identifierType), where both arguments are text strings. The \$identifier should be unique for the book. If you don't have anything unique you can use the _createUUID_ function mentioned later in the documentation.
-  * The \$identifierType must be one of these:
-    * "EPub::IDENTIFIER_URI": When using the page URL as \$identifier.
-    * "EPub::IDENTIFIER_ISBN": Usually used for published books, where the books unique ISBN number are available.
-    * "EPub::IDENTIFIER_UUID": A generated or random UUID string on the form c5bc871d-a20a-fc48-ccb4-bb134ae6c564
+Make your books accessible by adding metadata:
 
-### Optional Fields:
-* Description: A book description or synopsis
-* Author: Book author or creator. setAuthor(\$author, \$authorSortKey) has two arguments, where the sort key can be left blank with ''. The \$authorSortKey is basically how the name is to be sorted, usually it's "Lastname, First names" where the $author is the straight "Firstnames Lastname"
-* Publisher: Book publisher Information, use setPublisher($publisherName, $publisherURL) to set the name and URL of the publisher.
-* Date: The publishing date of the book, as a timestamp. If left blank the current date/time will be used.
-* Rights: Text string with the licence and copyrights that may apply to the book.
-* Source URL: The web address for the book, if any are available, but this eBook must be downloadable from somewhere. This is usually also the address used as an identifier, if that parameter is using the "URI" identifier type. 
+```php
+$book->setAccessibilitySummary("This book contains structural navigation and alternative text for images.");
+$book->addAccessMode("textual");
+$book->addAccessMode("visual");
+$book->addAccessibilityFeature("structuralNavigation");
+$book->setAccessibilityConformsTo("http://www.idpf.org/epub/a11y/accessibility-20170105.html#wcag-aa");
+```
 
-## TODO:
-* The goal being to encompass the majority of the features in the ePub 2.0 and 3.0 specifications, except the Daisy type files.
-* Add better handling of Reference structures.
-* Improve handling of media types and linked files.
-* A/V content is allowed, but definitely not recommended, and MUST have a fallback chain ending in a valid file. If no such chain is provided, the content should not be added.
-* Documentation, no one reads it, but everyone complains if it is missing.
-* Better examples to fully cover the capabilities of the EPub classes.
-* more TODO's.
+### Media Overlays (Read Aloud)
+
+Add synchronized audio to a chapter:
+
+```php
+$book->addChapterWithAudio(
+    "Chapter 1",
+    "chap1.xhtml",
+    $htmlContent,
+    "path/to/audio.mp3",
+    "00:05:30" // Duration
+);
+```
+
+### Export to AZW3 (Kindle)
+
+Requires `ebook-convert` (from Calibre) to be installed on the system.
+
+```php
+use Rampmaster\EPub\Core\Format\Azw3Adapter;
+
+$adapter = new Azw3Adapter();
+$azw3Path = $adapter->generate([
+    'title' => 'My Kindle Book',
+    'chapters' => [/* ... */]
+]);
+```
+
+## Credits
+
+This library is based on the original work by **A. Grandt** ([grandt/phpepub](https://github.com/Grandt/PHPePub)). We are grateful for his contribution to the PHP community, which served as the foundation for this project.
+
+## License
+
+This project is licensed under the **GNU LGPL 2.1**. See the [LICENSE](LICENSE) file for details.

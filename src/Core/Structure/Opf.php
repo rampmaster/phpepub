@@ -137,7 +137,7 @@ class Opf
             $opf .= "\txmlns:$ns=\"$uri\"\n";
         }
 
-        if ($this->bookVersion === EPub::BOOK_VERSION_EPUB3 && sizeof($this->prefixes) > 0) {
+        if (($this->bookVersion === EPub::BOOK_VERSION_EPUB3 || $this->bookVersion === EPub::BOOK_VERSION_EPUB301 || $this->bookVersion === EPub::BOOK_VERSION_EPUB31 || $this->bookVersion === EPub::BOOK_VERSION_EPUB32) && sizeof($this->prefixes) > 0) {
             $opf .= "\tprefix=\"";
             $addSpace = false;
             foreach ($this->prefixes as $name => $uri) {
@@ -151,7 +151,13 @@ class Opf
             $opf .= "\"\n";
         }
 
-        $opf .= "\tunique-identifier=\"" . $this->ident . "\" version=\"" . $this->bookVersion . "\">\n";
+        // Some epubcheck versions don't accept '3.0.1', '3.1' or '3.2' verbatim in the package/@version
+        // Normalize 3.0.1, 3.1 and 3.2 to 3.0 in the written OPF for compatibility while keeping internal bookVersion logic intact.
+        $versionAttr = $this->bookVersion;
+        if ($versionAttr === EPub::BOOK_VERSION_EPUB301 || $versionAttr === EPub::BOOK_VERSION_EPUB31 || $versionAttr === EPub::BOOK_VERSION_EPUB32) {
+            $versionAttr = '3.0';
+        }
+        $opf .= "\tunique-identifier=\"" . $this->ident . "\" version=\"" . $versionAttr . "\">\n";
         $opf .= $metadata;
         $opf .= $this->manifest->finalize($this->bookVersion);
         $opf .= $this->spine->finalize();
