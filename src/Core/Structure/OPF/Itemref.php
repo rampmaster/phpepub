@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Structure\OPF;
 
 /**
@@ -8,7 +11,8 @@ namespace Rampmaster\EPub\Core\Structure\OPF;
  * @copyright 2014- A. Grandt
  * @license   GNU LGPL 2.1
  */
-class Itemref {
+class Itemref
+{
     private $idref = null;
 
     private $linear = true;
@@ -19,7 +23,8 @@ class Itemref {
      * @param      $idref
      * @param bool $linear
      */
-    public function __construct($idref, $linear = true) {
+    public function __construct($idref, $linear = true)
+    {
         $this->setIdref($idref);
         $this->setLinear($linear);
     }
@@ -30,7 +35,8 @@ class Itemref {
      *
      * @param bool $linear
      */
-    public function setLinear($linear = true) {
+    public function setLinear($linear = true)
+    {
         $this->linear = $linear === true;
     }
 
@@ -39,7 +45,8 @@ class Itemref {
      *
      * @return void
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         unset($this->idref, $this->linear);
     }
 
@@ -49,7 +56,8 @@ class Itemref {
      *
      * @return string $idref
      */
-    public function getIdref() {
+    public function getIdref()
+    {
         return $this->idref;
     }
 
@@ -59,7 +67,8 @@ class Itemref {
      *
      * @param string $idref
      */
-    public function setIdref($idref) {
+    public function setIdref($idref)
+    {
         $this->idref = is_string($idref) ? trim($idref) : null;
     }
 
@@ -69,7 +78,8 @@ class Itemref {
      *
      * @return string
      */
-    public function finalize() {
+    public function finalize()
+    {
         $itemref = "\t\t<itemref idref=\"" . $this->idref . "\"";
 
         return $itemref . ($this->linear == false ? ' linear="no"' : '') . " />\n";

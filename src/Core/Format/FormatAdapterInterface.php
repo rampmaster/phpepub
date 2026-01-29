@@ -1,7 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Format;
 
-interface FormatAdapterInterface {
+interface FormatAdapterInterface
+{
     /**
      * Genera un archivo de salida a partir de los datos de entrada.
      * Devuelve la ruta al archivo generado.

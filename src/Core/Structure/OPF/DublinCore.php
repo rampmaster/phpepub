@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Structure\OPF;
 
 /**
@@ -8,7 +11,8 @@ namespace Rampmaster\EPub\Core\Structure\OPF;
  * @copyright 2014- A. Grandt
  * @license   GNU LGPL 2.1
  */
-class DublinCore extends MetaValue {
+class DublinCore extends MetaValue
+{
     public const CONTRIBUTOR = "contributor";
     public const COVERAGE = "coverage";
     public const CREATOR = "creator";
@@ -31,7 +35,8 @@ class DublinCore extends MetaValue {
      * @param string $name
      * @param string $value
      */
-    public function __construct($name, $value) {
+    public function __construct($name, $value)
+    {
         $this->setDc($name, $value);
     }
 
@@ -42,7 +47,8 @@ class DublinCore extends MetaValue {
      * @param string $name
      * @param string $value
      */
-    public function setDc($name, $value) {
+    public function setDc($name, $value)
+    {
         if (is_string($name)) {
             $this->setValue("dc:" . trim($name), $value);
         }

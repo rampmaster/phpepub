@@ -1,19 +1,25 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Format;
 
 use Rampmaster\EPub\Core\EPub;
 use Rampmaster\EPub\Helpers\FileHelper;
+use Symfony\Component\Process\Process;
 
 /**
  * Stub de adaptador EPUB. Implementa la interfaz pero delega en la clase EPub existente.
  * Configurable para generar EPUB 2.x o EPUB 3.x según la opción 'version' en $input.
  */
-class EpubAdapter implements FormatAdapterInterface {
+class EpubAdapter implements FormatAdapterInterface
+{
     /**
      * Genera un epub mínimo en build/ y devuelve la ruta al archivo generado.
      * Se esperan campos en $input: title, language, author, chapters (array of [name, filename, pathOrContent]), version
      */
-    public function generate(array $input): string {
+    public function generate(array $input): string
+    {
         $title = $input['title'] ?? 'Untitled';
         $language = $input['language'] ?? 'en';
         $author = $input['author'] ?? null;
@@ -51,10 +57,8 @@ class EpubAdapter implements FormatAdapterInterface {
                 $ccontent = "<h1>$cname</h1><p>Empty chapter</p>";
             }
 
-            // Ensure content is XHTML-like; wrap with basic header/footer if missing
-            if (strpos($ccontent, '<html') === false) {
-                $ccontent = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head>\n<body>" . $ccontent . "</body>\n</html>";
-            }
+            // Ensure content is XHTML-like and include chapter title in <title>
+            $ccontent = $this->convertToXhtml($ccontent, $language, $cname);
 
             $book->addChapter($cname, $cfile, $ccontent);
             $i++;
@@ -77,40 +81,232 @@ class EpubAdapter implements FormatAdapterInterface {
     /**
      * Valida el epub: usa epubcheck si está en el PATH; si no, valida la presencia de archivos clave dentro del zip.
      */
-    public function validate(string $path): bool {
+    public function validate(string $path): bool
+    {
         if (!is_file($path)) {
             return false;
         }
 
-        // If epubcheck available, use it
-        $epubcheck = null;
-        $which = trim(`which epubcheck`);
-        if ($which) {
-            $epubcheck = $which;
+        // If epubcheck available, use it (via symfony/process)
+        try {
+            // First try system binary 'epubcheck'
+            $probe = new Process(['epubcheck', '--version']);
+            $probe->run();
+            if ($probe->isSuccessful()) {
+                $proc = new Process(['epubcheck', $path]);
+                $proc->setTimeout(60);
+                $proc->run();
+                return $proc->isSuccessful();
+            }
+        } catch (\Throwable $e) {
+            // ignore and try next option
         }
 
-        if ($epubcheck) {
-            $cmd = escapeshellcmd($epubcheck) . ' ' . escapeshellarg($path) . ' 2>&1';
-            $output = [];
-            $ret = 0;
-            exec($cmd, $output, $ret);
-            // epubcheck returns 0 on success
-            return $ret === 0;
+        // Fallback: try bundled epubcheck JAR if present in repository root at /epubcheck/epubcheck.jar
+        $jarPath = __DIR__ . '/../../../epubcheck/epubcheck.jar';
+        if (is_file($jarPath)) {
+            try {
+                $proc = new Process(['java', '-jar', $jarPath, $path]);
+                $proc->setTimeout(120);
+                $proc->run();
+                return $proc->isSuccessful();
+            } catch (\Throwable $e) {
+                // ignore and fall back to zip checks
+            }
         }
 
         // Fallback: open zip and check for mimetype and OEBPS/book.opf
         $zip = new \ZipArchive();
         if ($zip->open($path) === true) {
+            // Prefer to read container.xml to find the OPF location
+            $containerPath = null;
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $entry = $zip->getNameIndex($i);
+                if (str_ends_with(strtolower($entry), 'meta-inf/container.xml')) {
+                    $containerPath = $entry;
+                    break;
+                }
+            }
+
+            $hasOpf = false;
+            $hasNcx = false;
+            $hasEpub3Toc = false;
+            $hasMimetype = false;
+
+            if ($containerPath !== null) {
+                $containerXml = $zip->getFromName($containerPath);
+                if ($containerXml !== false) {
+                    try {
+                        $doc = new \DOMDocument();
+                        $doc->loadXML($containerXml);
+                        $rootfiles = $doc->getElementsByTagName('rootfile');
+                        if ($rootfiles->length > 0) {
+                            $fullPath = $rootfiles->item(0)->getAttribute('full-path');
+                            if (!empty($fullPath) && $zip->locateName($fullPath, \ZipArchive::FL_NODIR) !== false) {
+                                $hasOpf = true;
+                                $opfContent = $zip->getFromName($fullPath);
+                                if ($opfContent !== false) {
+                                    // look for NCX item in manifest (application/x-dtbncx+xml)
+                                    if (stripos($opfContent, 'application/x-dtbncx+xml') !== false) {
+                                        $hasNcx = true;
+                                    }
+                                    // look for EPUB3 nav item (properties="nav")
+                                    if (stripos($opfContent, 'properties="nav"') !== false || stripos($opfContent, "properties='nav'") !== false) {
+                                        $hasEpub3Toc = true;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (\Throwable $e) {
+                        // fall back to scanning entries
+                    }
+                }
+            }
+
+            // If we didn't find OPF via container.xml, fallback to scanning entries
+            if (!$hasOpf || (!$hasNcx && !$hasEpub3Toc)) {
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $name = $zip->getNameIndex($i);
+                    $lname = strtolower($name);
+
+                    // detect mimetype item
+                    if (!$hasMimetype && $lname === 'mimetype') {
+                        $hasMimetype = true;
+                    }
+
+                    if (!$hasOpf && preg_match('/\.opf$/i', $lname)) {
+                        $hasOpf = true;
+                    }
+                    if (!$hasNcx && preg_match('/\.ncx$/i', $lname)) {
+                        $hasNcx = true;
+                    }
+
+                    if (!$hasEpub3Toc && preg_match('/\.(xhtml|html?|xml)$/i', $lname)) {
+                        $contents = $zip->getFromIndex($i);
+                        if ($contents !== false) {
+                            if (stripos($contents, '<nav') !== false || stripos($contents, 'epub:type') !== false || stripos($contents, 'properties="nav"') !== false) {
+                                $hasEpub3Toc = true;
+                            }
+                        }
+                    }
+
+                    if ($hasOpf && ($hasNcx || $hasEpub3Toc) && $hasMimetype) {
+                        break;
+                    }
+                }
+
+                // close after scanning
+                $zip->close();
+
+                // If ZipArchive couldn't find the mimetype entry, check first bytes
+                if (!$hasMimetype) {
+                    $fp = @fopen($path, 'rb');
+                    if ($fp) {
+                        $first = fread($fp, 20);
+                        fclose($fp);
+                        if (strpos($first, 'application/epub+zip') !== false) {
+                            $hasMimetype = true;
+                        }
+                    }
+                }
+
+                return $hasMimetype && $hasOpf && ($hasNcx || $hasEpub3Toc);
+            }
+
+            // If we got here, we had OPF detected via container.xml and maybe found ncx/nav
+            // Also confirm mimetype presence
             $mimetypeIndex = $zip->locateName('mimetype', \ZipArchive::FL_NODIR);
             $hasMimetype = $mimetypeIndex !== false;
-            $hasOpf = $zip->locateName('OEBPS/book.opf', \ZipArchive::FL_NODIR) !== false;
-            $hasNcx = $zip->locateName('OEBPS/book.ncx', \ZipArchive::FL_NODIR) !== false;
-            $hasEpub3Toc = $zip->locateName('OEBPS/epub3toc.xhtml', \ZipArchive::FL_NODIR) !== false;
-            $zip->close();
+            if (!$hasMimetype) {
+                $fp = @fopen($path, 'rb');
+                if ($fp) {
+                    $first = fread($fp, 20);
+                    fclose($fp);
+                    if (strpos($first, 'application/epub+zip') !== false) {
+                        $hasMimetype = true;
+                    }
+                }
+            }
 
             return $hasMimetype && $hasOpf && ($hasNcx || $hasEpub3Toc);
         }
 
         return false;
+    }
+
+    /**
+     * Convert HTML content to valid XHTML for EPUB.
+     */
+    private function convertToXhtml(string $content, string $language = 'en', string $title = ''): string
+    {
+        // Quick path: if snippet has no HTML root, treat as body fragment
+        $isFragment = (stripos($content, '<html') === false);
+
+        // Normalize encoding
+        // Wrap fragment for parsing
+        $parseHtml = $content;
+        if ($isFragment) {
+            $parseHtml = '<div>' . $content . '</div>';
+        }
+
+        // Use DOMDocument to parse the HTML fragment (tolerant parser)
+        $libxmlState = libxml_use_internal_errors(true);
+        $doc = new \DOMDocument('1.0', 'utf-8');
+        // Suppress warnings from malformed HTML
+        @$doc->loadHTML('<?xml encoding="utf-8"?>' . $parseHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+        // Create the XHTML document
+        $x = new \DOMDocument('1.0', 'utf-8');
+        $html = $x->createElementNS('http://www.w3.org/1999/xhtml', 'html');
+        $html->setAttribute('xml:lang', $language);
+        $html->setAttribute('lang', $language);
+        $x->appendChild($html);
+
+        $head = $x->createElement('head');
+        $meta = $x->createElement('meta');
+        $meta->setAttribute('charset', 'utf-8');
+        $head->appendChild($meta);
+        $titleElement = $x->createElement('title', $title);
+        $head->appendChild($titleElement);
+        $html->appendChild($head);
+
+        $body = $x->createElement('body');
+        $html->appendChild($body);
+
+        // Import nodes from parsed doc into body
+        if ($isFragment) {
+            // parsed wrapper div
+            $divs = $doc->getElementsByTagName('div');
+            if ($divs->length > 0) {
+                $frag = $divs->item(0);
+                foreach ($frag->childNodes as $child) {
+                    $imported = $x->importNode($child, true);
+                    $body->appendChild($imported);
+                }
+            }
+        } else {
+            // full document: import body children if present, else import documentElement
+            $b = null;
+            $bList = $doc->getElementsByTagName('body');
+            if ($bList->length > 0) {
+                $b = $bList->item(0);
+            } elseif ($doc->documentElement) {
+                $b = $doc->documentElement;
+            }
+            if ($b) {
+                foreach ($b->childNodes as $child) {
+                    $imported = $x->importNode($child, true);
+                    $body->appendChild($imported);
+                }
+            }
+        }
+
+        // Restore libxml state
+        libxml_clear_errors();
+        libxml_use_internal_errors($libxmlState);
+
+        // Return serialized XHTML with XML declaration
+        $xml = $x->saveXML();
+        return $xml;
     }
 }

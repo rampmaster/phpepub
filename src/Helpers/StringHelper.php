@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHPePub
  * <StringHelper.php description here>
@@ -8,8 +9,9 @@
  * @license   GNU LGPL 2.1
  */
 
-namespace Rampmaster\EPub\Helpers;
+declare(strict_types=1);
 
+namespace Rampmaster\EPub\Helpers;
 
 use Grandt\BinStringStatic;
 use DOMDocument;
@@ -17,7 +19,8 @@ use DOMNode;
 use Rampmaster\EPub\Core\StaticData;
 use Symfony\Component\Uid\Uuid;
 
-class StringHelper {
+class StringHelper
+{
     /**
      * Ensure the encoded string is a valid UTF-8 string.
      *
@@ -29,7 +32,8 @@ class StringHelper {
      *
      * @return string converted string.
      */
-    public static function fixEncoding($in_str) {
+    public static function fixEncoding($in_str)
+    {
         if (mb_detect_encoding($in_str) == "UTF-8" && mb_check_encoding($in_str, "UTF-8")) {
             return $in_str;
         } else {
@@ -44,7 +48,8 @@ class StringHelper {
      *
      * @return string
      */
-    public static function html2text($string) {
+    public static function html2text($string)
+    {
         return preg_replace('~<[^>]*>~', '', $string);
     }
 
@@ -61,7 +66,8 @@ class StringHelper {
      * @return string The formatted uuid
      * @throws \Exception
      */
-    public static function createUUID(int $bookVersion = 4, ?string $url = null) {
+    public static function createUUID(int $bookVersion = 4, ?string $url = null)
+    {
         switch ($bookVersion) {
             case 3:
                 $namespace = Uuid::fromString(Uuid::NAMESPACE_URL);
@@ -87,7 +93,8 @@ class StringHelper {
      *
      * @return string
      */
-    public static function encodeHtml($string) {
+    public static function encodeHtml($string)
+    {
         $string = strtr($string, StaticData::$htmlEntities);
 
         return $string;
@@ -100,7 +107,8 @@ class StringHelper {
      *
      * @return string with the stripped entities.
      */
-    public static function decodeHtmlEntities(string $string) {
+    public static function decodeHtmlEntities(string $string)
+    {
         $string = preg_replace('~\s*<br\s*/*\s*>\s*~i', "\n", $string);
         $string = preg_replace('~\s*</(p|div)\s*>\s*~i', "\n\n", $string);
         $string = preg_replace('~<[^>]*>~', '', $string);
@@ -126,7 +134,8 @@ class StringHelper {
      *
      * @return DOMNode fragment in a node.
      */
-    public static function createDomFragment($dom, $markup) {
+    public static function createDomFragment($dom, $markup)
+    {
         $node = $dom->createDocumentFragment();
         $node->appendXML($markup);
 
@@ -138,7 +147,8 @@ class StringHelper {
      *
      * @return string
      */
-    public static function removeComments($doc) {
+    public static function removeComments($doc)
+    {
         $doc = preg_replace('~--\s+>~', '-->', $doc);
         $doc = preg_replace('~<\s*!\s*--~', '<!--', $doc);
         $cPos = BinStringStatic::_strpos($doc, "<!--");

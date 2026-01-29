@@ -27,9 +27,10 @@
     "php": "^8.2",
     "ext-dom": "*",
     "ext-zip": "*",
-    "symfony/uid": "^7.2",
-    "symfony/filesystem": "^7.2",
-    "symfony/process": "^8.0"
+    "symfony/uid": "^7.4",
+    "symfony/console": "^7.4",
+    "symfony/filesystem": "^7.4",
+    "symfony/process": "^7.4"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",
@@ -44,28 +45,32 @@
       "Rampmaster\\EPub\\Test\\": "tests"
     },
     "classmap": [
-      "classmap//BinStringStatic.php"
+      "classmap/BinStringStatic.php"
     ]
   },
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
-    },
-    "scripts": {
-      "phpcs": "phpcs -s",
-      "phpstan": "phpstan",
-      "test": "phpunit",
-      "ci": [
-        "@phpcs",
-        "@phpstan",
-        "@test"
-      ]
-    },
-    "scripts-descriptions": {
-      "phpcs": "Run PHP Code Sniffer",
-      "phpstan": "Run PHPStan (with Larastan extension)",
-      "test": "Run the PHPUnit tests",
-      "ci": "Run all CI tests"
     }
+  },
+  "scripts": {
+    "phpcs": "phpcs -s --warning-severity=0",
+    "phpstan": "php tools/run-phpstan.php",
+    "epubcheck:version": "php bin/console epubcheck:version",
+    "epubcheck:validate": "php bin/console epubcheck:validate",
+    "test": "phpunit",
+    "ci": [
+      "@phpcs",
+      "@phpstan",
+      "@test"
+    ]
+  },
+  "scripts-descriptions": {
+    "phpcs": "Run PHP Code Sniffer",
+    "phpstan": "Run PHPStan (with Larastan extension)",
+    "epubcheck:version": "Print epubcheck version (java -jar epubcheck/epubcheck.jar or system binary)",
+    "epubcheck:validate": "Validate EPUB_FILE env var using system epubcheck",
+    "test": "Run the PHPUnit tests",
+    "ci": "Run all CI tests"
   }
 }
