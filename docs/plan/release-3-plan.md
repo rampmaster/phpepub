@@ -1,45 +1,45 @@
-# Plan de Release 3: Soporte EPUB 3.2 y Compatibilidad EPUB 2.0.1
+# Release 3 Plan: EPUB 3.2 Support and EPUB 2.0.1 Compatibility
 
-## Objetivo
-Completar el soporte de la familia EPUB 3.x añadiendo la versión 3.2 y asegurar una compatibilidad robusta con EPUB 2.0.1 (legacy). EPUB 3.2 es la versión recomendada actual por el W3C y simplifica algunos requisitos respecto a 3.0/3.1.
+## Objective
+Complete support for the EPUB 3.x family by adding version 3.2 and ensuring robust compatibility with EPUB 2.0.1 (legacy). EPUB 3.2 is the current recommended version by the W3C and simplifies some requirements compared to 3.0/3.1.
 
-## Alcance
-- **Soporte EPUB 3.2**:
-    - Actualizar constantes y atributos de versión.
-    - Eliminar requisitos estrictos de 3.1 que fueron relajados en 3.2 (ej. `dcterms:modified` ya no es estrictamente obligatorio si se usa `dcterms:modified` de otra forma, pero mantenerlo es buena práctica; revisar especificación).
-    - Permitir fuentes remotas y scripts (con advertencias).
-- **Compatibilidad EPUB 2.0.1**:
-    - Revisar y reforzar la generación de NCX (obligatorio en 2.0.1).
-    - Asegurar que elementos HTML5 no se filtren en modo 2.0.1 (o se degraden correctamente).
-- **Validación**: Actualizar tests de integración.
+## Scope
+- **EPUB 3.2 Support**:
+    - Update constants and version attributes.
+    - Remove strict requirements from 3.1 that were relaxed in 3.2 (e.g., `dcterms:modified` is no longer strictly mandatory if `dcterms:modified` is used in another way, but keeping it is good practice; check specification).
+    - Allow remote fonts and scripts (with warnings).
+- **EPUB 2.0.1 Compatibility**:
+    - Review and reinforce NCX generation (mandatory in 2.0.1).
+    - Ensure HTML5 elements do not leak into 2.0.1 mode (or degrade gracefully).
+- **Validation**: Update integration tests.
 
-## Estrategia de Implementación
-1.  **Actualización de `EPub`**: Añadir constante para 3.2.
-2.  **Ajuste de `Opf`**: Lógica para versión 3.2.
-3.  **Revisión de `Ncx`**: Asegurar compatibilidad total con 2.0.1 (ya soportado, pero verificar edge cases).
-4.  **Tests**: Ampliar matriz de pruebas.
+## Implementation Strategy
+1.  **Update `EPub`**: Add constant for 3.2.
+2.  **Adjust `Opf`**: Logic for version 3.2.
+3.  **Review `Ncx`**: Ensure full compatibility with 2.0.1 (already supported, but verify edge cases).
+4.  **Tests**: Expand test matrix.
 
 ## Tickets
 
-### TICKET-007: Soporte EPUB 3.2
-- **Objetivo**: Generar EPUBs válidos declarados como versión 3.2.
-- **Tareas**:
-    - Añadir constante `BOOK_VERSION_EPUB32`.
-    - Ajustar generación de OPF (`package version="3.2"`).
-    - Validar con `epubcheck`.
+### TICKET-007: EPUB 3.2 Support
+- **Objective**: Generate valid EPUBs declared as version 3.2.
+- **Tasks**:
+    - Add constant `BOOK_VERSION_EPUB32`.
+    - Adjust OPF generation (`package version="3.2"`).
+    - Validate with `epubcheck`.
 
-### TICKET-008: Refuerzo Compatibilidad EPUB 2.0.1
-- **Objetivo**: Asegurar que la generación en modo 2.0.1 es estricta y no incluye elementos de 3.x que rompan validación.
-- **Tareas**:
-    - Revisar `EpubAdapter::convertToXhtml` para degradar HTML5 a XHTML 1.1 si la versión es 2.0.1.
-    - Verificar que `epub:type` y otros atributos de 3.x no se inyecten en 2.0.1.
+### TICKET-008: Reinforce EPUB 2.0.1 Compatibility
+- **Objective**: Ensure generation in 2.0.1 mode is strict and does not include 3.x elements that break validation.
+- **Tasks**:
+    - Review `EpubAdapter::convertToXhtml` to degrade HTML5 to XHTML 1.1 if the version is 2.0.1.
+    - Verify that `epub:type` and other 3.x attributes are not injected into 2.0.1.
 
-### TICKET-009: Tests de Integración R3
-- **Objetivo**: Tests completos para 3.2 y regresión de 2.0.1.
-- **Tareas**:
-    - Actualizar `EpubCheckIntegrationTest` con provider para 3.2.
-    - Añadir test específico para 2.0.1 con contenido HTML5 que debe ser limpiado.
+### TICKET-009: Integration Tests R3
+- **Objective**: Complete tests for 3.2 and regression for 2.0.1.
+- **Tasks**:
+    - Update `EpubCheckIntegrationTest` with provider for 3.2.
+    - Add specific test for 2.0.1 with HTML5 content that must be cleaned.
 
-## Criterios de Éxito
-- `epubcheck` valida 3.2 sin errores.
-- `epubcheck` valida 2.0.1 generado desde input moderno sin errores.
+## Success Criteria
+- `epubcheck` validates 3.2 without errors.
+- `epubcheck` validates 2.0.1 generated from modern input without errors.

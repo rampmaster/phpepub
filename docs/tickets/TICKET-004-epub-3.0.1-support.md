@@ -1,60 +1,60 @@
 # Ticket: release_TICKET-004_EPUB-3.0.1-Support
 
-> Regla: este ticket debe ser ejecutable **sin interpretación**. Si un campo no se puede responder, el ticket debe marcarse como **BLOQUEADO** y explicitar qué falta.
+> Rule: this ticket must be executable **without interpretation**. If a field cannot be answered, the ticket must be marked as **BLOCKED** and explicitly state what is missing.
 
-## Estado
+## Status
 
 - [x] Ready
-- [ ] BLOQUEADO (explicar por qué)
+- [ ] BLOCKED (explain why)
 
-## Contexto
+## Context
 
-El proyecto actualmente soporta EPUB 2.0.1 y EPUB 3.0. El roadmap indica que el Release 2 debe añadir soporte para EPUB 3.0.1. Esta versión es una actualización menor de 3.0 pero requiere que el atributo `version` en el elemento `package` del OPF sea "3.0.1" (o mantenerse en "3.0" si no se usan features exclusivas, pero explícitamente queremos soportar la declaración).
+The project currently supports EPUB 2.0.1 and EPUB 3.0. The roadmap indicates that Release 2 must add support for EPUB 3.0.1. This version is a minor update to 3.0 but requires the `version` attribute in the OPF `package` element to be "3.0.1" (or remain "3.0" if exclusive features are not used, but we explicitly want to support the declaration).
 
-## Objetivo (medible)
+## Objective (measurable)
 
-- Permitir configurar la generación del libro para la versión "3.0.1".
-- El archivo OPF generado debe tener `<package version="3.0.1" ...>`.
-- El EPUB generado debe pasar `epubcheck` sin errores.
+- Allow configuring book generation for version "3.0.1".
+- The generated OPF file must have `<package version="3.0.1" ...>`.
+- The generated EPUB must pass `epubcheck` without errors.
 
-## Alcance
+## Scope
 
-**Incluye**:
-- Añadir constante `BOOK_VERSION_EPUB301` en `src/Core/EPub.php`.
-- Permitir pasar esta versión al constructor de `EPub` o `EpubAdapter`.
-- Asegurar que `Opf` renderiza el atributo de versión correctamente.
+**Includes**:
+- Add constant `BOOK_VERSION_EPUB301` in `src/Core/EPub.php`.
+- Allow passing this version to the `EPub` or `EpubAdapter` constructor.
+- Ensure `Opf` renders the version attribute correctly.
 
-**No incluye**:
-- Cambios estructurales mayores (3.0.1 es muy similar a 3.0).
+**Does not include**:
+- Major structural changes (3.0.1 is very similar to 3.0).
 
-## Contrato funcional
+## Functional Contract
 
-### Entradas
+### Inputs
 - `new EPub(EPub::BOOK_VERSION_EPUB301, ...)`
-- O `EpubAdapter::generate(['version' => '3.0.1', ...])`
+- Or `EpubAdapter::generate(['version' => '3.0.1', ...])`
 
-### Salidas
-- Archivo `.epub` válido según estándar 3.0.1.
+### Outputs
+- Valid `.epub` file according to 3.0.1 standard.
 
-### Reglas de negocio
-- Validación `epubcheck` debe ser exitosa.
+### Business Rules
+- `epubcheck` validation must be successful.
 
-## Datos
+## Data
 
-- Constante nueva.
+- New constant.
 
-## Plan de implementación
+## Implementation Plan
 
-1. Editar `src/Core/EPub.php`: añadir constante `BOOK_VERSION_EPUB301 = '3.0.1'`.
-2. Verificar lógica en `src/Core/Structure/Opf.php` (o donde se genere el tag `<package>`) para usar la versión inyectada.
-3. Crear test unitario/integración que genere un EPUB 3.0.1 y valide el atributo en el OPF.
+1. Edit `src/Core/EPub.php`: add constant `BOOK_VERSION_EPUB301 = '3.0.1'`.
+2. Verify logic in `src/Core/Structure/Opf.php` (or where the `<package>` tag is generated) to use the injected version.
+3. Create unit/integration test that generates an EPUB 3.0.1 and validates the attribute in the OPF.
 
-## Criterios de aceptación (checklist verificable)
+## Acceptance Criteria (verifiable checklist)
 
-- [x] Se puede instanciar `EPub` con versión 3.0.1.
-- [x] El OPF generado contiene `version="3.0.1"`.
-- [x] `epubcheck` valida el archivo generado.
+- [x] `EPub` can be instantiated with version 3.0.1.
+- [x] The generated OPF contains `version="3.0.1"`.
+- [x] `epubcheck` validates the generated file.
 
-## Pruebas
+## Tests
 
-- Generar un EPUB simple con versión 3.0.1 y verificar contenido de `OEBPS/content.opf` (o similar).
+- Generate a simple EPUB with version 3.0.1 and verify content of `OEBPS/content.opf` (or similar).

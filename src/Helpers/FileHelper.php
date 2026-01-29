@@ -219,7 +219,8 @@ class FileHelper
      * Returns true only if both realpath($path) and realpath($baseDir) exist and
      * the resolved path is located under the base directory.
      */
-    public static function isPathInside(string $path, string $baseDir): bool {
+    public static function isPathInside(string $path, string $baseDir): bool
+    {
         $rp = @realpath($path);
         $rb = @realpath($baseDir);
         // If realpath failed for the path but the path exists or looks absolute, try canonicalize
@@ -242,7 +243,8 @@ class FileHelper
      * Check whether a build directory is safe (inside repository root).
      * Project root is inferred relative to this file if not provided.
      */
-    public static function isSafeBuildDir(string $buildDir, ?string $repoRoot = null): bool {
+    public static function isSafeBuildDir(string $buildDir, ?string $repoRoot = null): bool
+    {
         if ($repoRoot === null) {
             // repo root is four levels up from src/Helpers
             $repoRoot = dirname(__DIR__, 3);

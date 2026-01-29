@@ -25,11 +25,16 @@ class FuzzingPathsTest extends TestCase
         }
     }
 
-    private function rrmdir($dir) {
-        if (!is_dir($dir)) return;
+    private function rrmdir($dir)
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
         $objects = scandir($dir);
         foreach ($objects as $object) {
-            if ($object === '.' || $object === '..') continue;
+            if ($object === '.' || $object === '..') {
+                continue;
+            }
             $path = $dir . '/' . $object;
             if (is_dir($path)) {
                 $this->rrmdir($path);
@@ -50,7 +55,7 @@ class FuzzingPathsTest extends TestCase
             'language' => 'en',
             'author' => 'Fuzzer',
             'chapters' => [$malicious],
-            'buildDir' => $this->buildDir
+            'buildDir' => $this->buildDir,
         ]);
     }
 
@@ -64,7 +69,7 @@ class FuzzingPathsTest extends TestCase
             'language' => 'en',
             'author' => 'Fuzzer',
             'chapters' => [$malicious],
-            'buildDir' => $this->buildDir
+            'buildDir' => $this->buildDir,
         ]);
     }
 
@@ -79,7 +84,7 @@ class FuzzingPathsTest extends TestCase
             'language' => 'en',
             'author' => 'Fuzzer',
             'chapters' => [$malicious],
-            'buildDir' => $this->buildDir
+            'buildDir' => $this->buildDir,
         ]);
     }
 
@@ -92,7 +97,7 @@ class FuzzingPathsTest extends TestCase
             'language' => 'en',
             'author' => 'Fuzzer',
             'chapters' => [[ 'name' => 'Safe', 'file' => 's.xhtml', 'content' => $content ]],
-            'buildDir' => $this->buildDir
+            'buildDir' => $this->buildDir,
         ]);
         $this->assertFileExists($out);
         // ensure artifact inside build dir
@@ -109,7 +114,7 @@ class FuzzingPathsTest extends TestCase
             'language' => 'en',
             'author' => 'Fuzzer',
             'chapters' => [[ 'name' => 'Long', 'file' => $long, 'content' => '<p>x</p>' ]],
-            'buildDir' => $this->buildDir
+            'buildDir' => $this->buildDir,
         ]);
     }
 }

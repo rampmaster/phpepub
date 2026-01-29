@@ -1,43 +1,43 @@
-# Plan de Release 2: Soporte EPUB 3.0.1 y 3.1
+# Release 2 Plan: EPUB 3.0.1 and 3.1 Support
 
-## Objetivo
-Ampliar la capacidad de generación de EPUB para soportar las especificaciones EPUB 3.0.1 y EPUB 3.1. Esto implica ajustes en la estructura del paquete (OPF), metadatos y navegación, asegurando compatibilidad y validación correcta con `epubcheck`.
+## Objective
+Expand EPUB generation capabilities to support EPUB 3.0.1 and EPUB 3.1 specifications. This involves adjustments to the package structure (OPF), metadata, and navigation, ensuring compatibility and correct validation with `epubcheck`.
 
-## Alcance
-- **Soporte EPUB 3.0.1**: Ajustes menores en metadatos y atributos permitidos.
-- **Soporte EPUB 3.1**: Cambios en la estructura de navegación (eliminación de NCX como obligatorio si existe Nav Document), cambios en metadatos (dc:identifier, dcterms:modified).
-- **Validación**: Actualizar tests de integración para validar específicamente estas versiones.
+## Scope
+- **EPUB 3.0.1 Support**: Minor adjustments to metadata and allowed attributes.
+- **EPUB 3.1 Support**: Changes to navigation structure (NCX no longer mandatory if Nav Document exists), metadata changes (dc:identifier, dcterms:modified).
+- **Validation**: Update integration tests to specifically validate these versions.
 
-## Estrategia de Implementación
-1.  **Refactorización de `EPub` y `Opf`**: Permitir configuración granular de la versión (3.0, 3.0.1, 3.1).
-2.  **Adaptación de Metadatos**: Implementar lógica condicional para metadatos requeridos/obsoletos según versión.
-3.  **Navegación**: Asegurar que para 3.1 se priorice el Nav Document HTML5 y el NCX sea opcional/legacy.
+## Implementation Strategy
+1.  **Refactoring `EPub` and `Opf`**: Allow granular configuration of the version (3.0, 3.0.1, 3.1).
+2.  **Metadata Adaptation**: Implement conditional logic for required/obsolete metadata based on version.
+3.  **Navigation**: Ensure that for 3.1, the HTML5 Nav Document is prioritized and NCX is optional/legacy.
 
 ## Tickets
 
-### TICKET-004: Soporte EPUB 3.0.1
-- **Objetivo**: Permitir generar EPUBs declarados como versión 3.0.1.
-- **Tareas**:
-    - Actualizar constante de versiones en `EPub`.
-    - Ajustar `package` version attribute en OPF.
-    - Validar con `epubcheck`.
+### TICKET-004: EPUB 3.0.1 Support
+- **Objective**: Allow generating EPUBs declared as version 3.0.1.
+- **Tasks**:
+    - Update version constant in `EPub`.
+    - Adjust `package` version attribute in OPF.
+    - Validate with `epubcheck`.
 
-### TICKET-005: Soporte EPUB 3.1
-- **Objetivo**: Permitir generar EPUBs declarados como versión 3.1.
-- **Tareas**:
-    - Actualizar constante de versiones.
-    - Implementar cambios estructurales de 3.1 (ej. metadatos `dcterms:modified` obligatorio, `opf:role` deprecated en favor de `refines`).
-    - Validar con `epubcheck`.
+### TICKET-005: EPUB 3.1 Support
+- **Objective**: Allow generating EPUBs declared as version 3.1.
+- **Tasks**:
+    - Update version constant.
+    - Implement structural changes for 3.1 (e.g., `dcterms:modified` mandatory, `opf:role` deprecated in favor of `refines`).
+    - Validate with `epubcheck`.
 
-### TICKET-006: Tests de Integración R2
-- **Objetivo**: Asegurar que las nuevas versiones pasan la validación CI.
-- **Tareas**:
-    - Extender `EpubCheckIntegrationTest` para cubrir 3.0.1 y 3.1.
-    - Verificar que no hay regresiones en 3.0 y 2.0.1.
+### TICKET-006: Integration Tests R2
+- **Objective**: Ensure new versions pass CI validation.
+- **Tasks**:
+    - Extend `EpubCheckIntegrationTest` to cover 3.0.1 and 3.1.
+    - Verify no regressions in 3.0 and 2.0.1.
 
-## Riesgos
-- Diferencias sutiles en validación de `epubcheck` para 3.0.1 vs 3.1 pueden requerir ajustes finos en `Opf.php`.
+## Risks
+- Subtle differences in `epubcheck` validation for 3.0.1 vs 3.1 may require fine-tuning in `Opf.php`.
 
-## Criterios de Éxito
-- `epubcheck` valida correctamente archivos generados como 3.0.1 y 3.1.
-- CI pasa en verde para todas las versiones soportadas.
+## Success Criteria
+- `epubcheck` correctly validates files generated as 3.0.1 and 3.1.
+- CI passes for all supported versions.

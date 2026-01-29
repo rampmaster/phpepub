@@ -151,7 +151,13 @@ class Opf
             $opf .= "\"\n";
         }
 
-        $opf .= "\tunique-identifier=\"" . $this->ident . "\" version=\"" . $this->bookVersion . "\">\n";
+        // Some epubcheck versions don't accept '3.0.1' verbatim in the package/@version
+        // Normalize 3.0.1 to 3.0 in the written OPF for compatibility while keeping internal bookVersion logic intact.
+        $versionAttr = $this->bookVersion;
+        if ($versionAttr === EPub::BOOK_VERSION_EPUB301) {
+            $versionAttr = '3.0';
+        }
+        $opf .= "\tunique-identifier=\"" . $this->ident . "\" version=\"" . $versionAttr . "\">\n";
         $opf .= $metadata;
         $opf .= $this->manifest->finalize($this->bookVersion);
         $opf .= $this->spine->finalize();
