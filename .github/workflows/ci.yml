@@ -48,18 +48,18 @@ jobs:
           echo "Downloading epubcheck from $LATEST_URL"
           mkdir -p /tmp/epubcheck_download
           curl -fsSL -o /tmp/epubcheck_download/epubcheck.zip "$LATEST_URL"
-          unzip -q /tmp/epubcheck_download/epubcheck.zip -d /tmp/epubcheck_download
-          JARPATH=$(find /tmp/epubcheck_download -type f -name 'epubcheck*.jar' | head -n1)
-          if [ -z "$JARPATH" ]; then
-            echo "Could not find epubcheck jar after download" >&2
-            exit 1
+          unzip -q /tmp/epubcheck_download/epubcheck.zip -d /opt/epubcheck
+          
+          # Find the main jar and create a symlink for easier access
+          JAR_DIR=$(find /opt/epubcheck -type d -name 'epubcheck-*' | head -n1)
+          if [ -z "$JAR_DIR" ]; then
+              echo "Could not find epubcheck directory after extraction" >&2
+              exit 1
           fi
-          mkdir -p /opt/epubcheck
-          cp "$JARPATH" /opt/epubcheck/epubcheck.jar
-          echo "epubcheck_jar=/opt/epubcheck/epubcheck.jar" >> $GITHUB_OUTPUT
           
           # Make it available on the path
-          echo "java -jar /opt/epubcheck/epubcheck.jar \"\$@\"" > /usr/local/bin/epubcheck
+          echo "java -jar \"$JAR_DIR/epubcheck.jar\" --version"
+          echo "java -jar \"$JAR_DIR/epubcheck.jar\" \"\$@\"" > /usr/local/bin/epubcheck
           chmod +x /usr/local/bin/epubcheck
 
       - name: Show epubcheck version
