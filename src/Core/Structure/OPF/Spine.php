@@ -76,7 +76,7 @@ class Spine
     {
         $spine = "\n\t<spine toc=\"" . $this->toc . "\">\n";
         foreach ($this->itemrefs as $itemref) {
-            /** @var $itemref ItemRef */
+            /** @var Itemref $itemref */
             $spine .= $itemref->finalize();
         }
 

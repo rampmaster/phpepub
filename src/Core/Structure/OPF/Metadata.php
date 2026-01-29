@@ -145,7 +145,7 @@ class Metadata
         $metadata = "\t<metadata>\n";
 
         foreach ($this->dc as $dc) {
-            /** @var $dc MetaValue */
+            /** @var MetaValue $dc */
             $metadata .= $dc->finalize($bookVersion);
         }
 
