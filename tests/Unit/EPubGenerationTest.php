@@ -64,7 +64,7 @@ class EPubGenerationTest extends TestCase {
 
     public function testFixturesExist(): void
     {
-        $this->assertFileExists(__DIR__ . '/fixtures/simple/index.html');
+        $this->assertFileExists(__DIR__ . '/../../assets/fixtures/simple/index.html');
     }
 
     public function testBasicGenerationPlaceholder(): void
