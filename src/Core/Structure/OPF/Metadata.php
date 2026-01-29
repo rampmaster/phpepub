@@ -88,6 +88,15 @@ class Metadata
             $content = is_string($content) ? trim($content) : null;
         }
         if (isset($content)) {
+            // Evitar duplicados por nombre de propiedad (p. ej. dcterms:modified)
+            foreach ($this->metaProperties as $existing) {
+                $existingName = array_key_first($existing);
+                if ($existingName === $name) {
+                    // Ya existe la propiedad, no la añadimos de nuevo
+                    return;
+                }
+            }
+
             $this->metaProperties[] = [
                 $name => $content,
             ];
