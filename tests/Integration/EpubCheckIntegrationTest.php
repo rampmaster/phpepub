@@ -12,7 +12,7 @@ class EpubCheckIntegrationTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->buildDir = __DIR__ . '/../build';
+        $this->buildDir = __DIR__ . '/../../build';
         if (is_dir($this->buildDir)) {
             $this->rrmdir($this->buildDir);
         }
@@ -49,7 +49,7 @@ class EpubCheckIntegrationTest extends TestCase
         }
 
         $adapter = new EpubAdapter();
-        $fixture = __DIR__ . '/../fixtures/simple/index.html';
+        $fixture = __DIR__ . '/../../assets/fixtures/simple/index.html';
 
         $outputPath = $adapter->generate([
             'title' => 'Integration Test',

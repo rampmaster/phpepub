@@ -229,4 +229,79 @@ class EpubAdapter implements FormatAdapterInterface {
 
         return false;
     }
+
+    /**
+     * Convert HTML content to valid XHTML for EPUB.
+     */
+    private function convertToXhtml(string $content, string $language = 'en'): string {
+        // Quick path: if snippet has no HTML root, treat as body fragment
+        $isFragment = (stripos($content, '<html') === false);
+
+        // Normalize encoding
+        // Wrap fragment for parsing
+        $parseHtml = $content;
+        if ($isFragment) {
+            $parseHtml = '<div>' . $content . '</div>';
+        }
+
+        // Use DOMDocument to parse the HTML fragment (tolerant parser)
+        $libxmlState = libxml_use_internal_errors(true);
+        $doc = new \DOMDocument('1.0', 'utf-8');
+        // Suppress warnings from malformed HTML
+        @$doc->loadHTML('<?xml encoding="utf-8"?>' . $parseHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+        // Create the XHTML document
+        $x = new \DOMDocument('1.0', 'utf-8');
+        $html = $x->createElementNS('http://www.w3.org/1999/xhtml', 'html');
+        $html->setAttribute('xml:lang', $language);
+        $html->setAttribute('lang', $language);
+        $x->appendChild($html);
+
+        $head = $x->createElement('head');
+        $meta = $x->createElement('meta');
+        $meta->setAttribute('charset', 'utf-8');
+        $head->appendChild($meta);
+        $title = $x->createElement('title', '');
+        $head->appendChild($title);
+        $html->appendChild($head);
+
+        $body = $x->createElement('body');
+        $html->appendChild($body);
+
+        // Import nodes from parsed doc into body
+        if ($isFragment) {
+            // parsed wrapper div
+            $divs = $doc->getElementsByTagName('div');
+            if ($divs->length > 0) {
+                $frag = $divs->item(0);
+                foreach ($frag->childNodes as $child) {
+                    $imported = $x->importNode($child, true);
+                    $body->appendChild($imported);
+                }
+            }
+        } else {
+            // full document: import body children if present, else import documentElement
+            $b = null;
+            $bList = $doc->getElementsByTagName('body');
+            if ($bList->length > 0) {
+                $b = $bList->item(0);
+            } else if ($doc->documentElement) {
+                $b = $doc->documentElement;
+            }
+            if ($b) {
+                foreach ($b->childNodes as $child) {
+                    $imported = $x->importNode($child, true);
+                    $body->appendChild($imported);
+                }
+            }
+        }
+
+        // Restore libxml state
+        libxml_clear_errors();
+        libxml_use_internal_errors($libxmlState);
+
+        // Return serialized XHTML with XML declaration
+        $xml = $x->saveXML();
+        return $xml;
+    }
 }

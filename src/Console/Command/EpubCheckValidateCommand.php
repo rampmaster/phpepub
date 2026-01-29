@@ -1,26 +1,26 @@
 <?php
 namespace Rampmaster\EPub\Console\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-class EpubCheckCommand extends Command {
-
+#[AsCommand(name: self::NAME, description: self::DESCRIPTION)]
+class EpubCheckValidateCommand extends Command {
     public const NAME = 'epubcheck:validate';
     public const DESCRIPTION = 'Validate an EPUB with epubcheck (binary or jar)';
 
-    public function __construct()
-    {
-        parent::__construct(self::NAME, self::DESCRIPTION);
-    }
-
     protected function configure(): void {
-        // Configure command: optional file argument
-        $this->setHelp('Validate an EPUB file using the system epubcheck binary or a local epubcheck JAR.\n\nUsage: php bin/console epubcheck:validate <file>\nOr set EPUB_FILE environment variable.');
-        $this->addArgument('file', InputArgument::OPTIONAL, 'EPUB file to validate');
+        $default = getenv('EPUB_FILE') ?: null;
+        $this->addArgument('file', InputArgument::OPTIONAL, 'EPUB file to validate', $default);
+        $this->setHelp(
+            "Validate an EPUB file using the system epubcheck binary or a local epubcheck JAR.\n\n" .
+            "Usage: php bin/console epubcheck:validate <file>\n" .
+            "Or set EPUB_FILE environment variable."
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
@@ -36,10 +36,6 @@ class EpubCheckCommand extends Command {
             }
         } catch (\Throwable $e) {
             // ignore probe errors, fallback to jar search
-        }
-
-        if (empty($file)) {
-            $file = getenv('EPUB_FILE') ?: null;
         }
 
         if (empty($file)) {

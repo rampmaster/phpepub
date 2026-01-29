@@ -32,7 +32,7 @@ class EPubGenerationTest extends TestCase {
 
     public function testGenerateEpubFromFixture() {
         $adapter = new EpubAdapter();
-        $fixture = __DIR__ . '/fixtures/simple/index.html';
+        $fixture = __DIR__ . '/../../assets/fixtures/simple/index.html';
         $output = $adapter->generate([
             'title' => 'Test Fixture',
             'language' => 'en',
@@ -40,7 +40,7 @@ class EPubGenerationTest extends TestCase {
             'chapters' => [
                 ['name' => 'Intro', 'file' => 'intro.xhtml', 'path' => $fixture]
             ],
-            'buildDir' => __DIR__ . '/build'
+            'buildDir' => __DIR__ . '/../../build'
         ]);
 
         $this->assertFileExists($output, 'El archivo epub debe existir');

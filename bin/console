@@ -4,11 +4,11 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
 use Rampmaster\EPub\Console\Command\EpubCheckVersionCommand;
-use Rampmaster\EPub\Console\Command\EpubCheckCommand;
+use Rampmaster\EPub\Console\Command\EpubCheckValidateCommand;
 
 $application = new Application('phpepub console');
-$application->register(EpubCheckCommand::NAME);
-$application->register(EpubCheckVersionCommand::NAME);
+$application->addCommand(new EpubCheckValidateCommand());
+$application->addCommand(new EpubCheckVersionCommand());
 $application->setDefaultCommand('list');
 try {
     $application->run();

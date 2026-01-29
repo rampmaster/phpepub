@@ -1,5 +1,5 @@
 <?php
-namespace Rampmaster\EPub\Helpers\enums;
+namespace Rampmaster\EPub\Helpers\Enums;
 
 use Rampmaster\EPub\Helpers\Enum;
 
