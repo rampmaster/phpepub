@@ -7,7 +7,7 @@ $mapping = ['INFO' => 0, 'LOW' => 1, 'MEDIUM' => 2, 'HIGH' => 3, 'CRITICAL' => 4
 $thresholdLevel = $mapping[strtoupper($threshold)] ?? 3;
 
 // Run composer audit
-$cmd = 'composer audit --format=json 2>/dev/null';
+$cmd = 'composer audit --format=json';
 $output = null;
 $return = 0;
 exec($cmd, $output, $return);

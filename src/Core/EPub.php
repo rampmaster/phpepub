@@ -464,7 +464,7 @@ class EPub
         // Actually, SMIL text src usually points to file#id. If no ID, it points to the file.
         // But EPUB 3 Media Overlays usually require granular sync.
         // Let's assume a simple case: text src="chapter.xhtml", audio src="audio.mp3" clipBegin="0" clipEnd="duration"
-        
+
         // We need to extract an ID from the content to be compliant with granular sync if possible.
         $ids = $this->findIdAttributes($chapterData);
         $targetId = $ids[0] ?? null; // Use the first ID found
@@ -489,10 +489,10 @@ class EPub
         if ($item) {
             $item->setMediaOverlay($smilId);
         }
-        
+
         // Add SMIL file to OPF
         $this->opf->addItem($smilId, $smilFileName, Smil::MIMETYPE);
-        
+
         // Add duration metadata
         $this->opf->addMetaProperty("media:duration", $duration); // Global duration (should be sum, but for now just add)
         $this->opf->addMetaProperty("media:duration", $duration)->refines("#" . $smilId); // Duration for this SMIL item
@@ -618,7 +618,7 @@ class EPub
             $xml->loadXML($xml2Doc->saveXML());
             $doc = $xml->saveXML();
 
-            if (!$this->isEPubVersion2()) {
+            if (!str_starts_with($this->bookVersion, '3.')) {
                 $doc = preg_replace('#^\s*<!DOCTYPE\ .+?>\s*#im', '', $doc);
             }
         }
@@ -1020,7 +1020,7 @@ class EPub
             return false;
         }
 
-        if ($this->bookVersion !== EPub::BOOK_VERSION_EPUB3 && $this->bookVersion !== EPub::BOOK_VERSION_EPUB301 && $this->bookVersion !== EPub::BOOK_VERSION_EPUB31 && $this->bookVersion !== EPub::BOOK_VERSION_EPUB32) {
+        if (!str_starts_with($this->bookVersion, '3.')) {
             // ePub 2 does not support multimedia formats, and they must be removed.
             $externalReferences = EPub::EXTERNAL_REF_REMOVE_IMAGES;
         }
@@ -2317,7 +2317,7 @@ class EPub
         $this->opf->metadata->addDublinCore($DCdate);
 
         // EPUB 3.1 and 3.2 requires dcterms:modified
-        if ($this->bookVersion === EPub::BOOK_VERSION_EPUB31 || $this->bookVersion === EPub::BOOK_VERSION_EPUB32) {
+        if (str_starts_with($this->bookVersion, '3.') && $this->bookVersion !== EPub::BOOK_VERSION_EPUB3 && $this->bookVersion !== EPub::BOOK_VERSION_EPUB301) {
             $this->opf->addMetaProperty("dcterms:modified", gmdate("Y-m-d\TH:i:s\Z", $this->date));
         }
 
@@ -2406,7 +2406,7 @@ class EPub
 
         $this->finalizeTOC();
 
-        if (!$this->isEPubVersion2()) {
+        if (str_starts_with($this->bookVersion, '3.')) {
             $this->addEPub3TOC("epub3toc.xhtml", $this->buildEPub3TOC());
         }
 
