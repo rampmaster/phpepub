@@ -233,9 +233,10 @@ class FileHelper
             $rb = Path::canonicalize($baseDir);
         }
         // If $rp is still false, it means the path doesn't exist and couldn't be canonicalized as absolute
-        if ($rp === false || $rb === false) {
+        if ($rp === '' || $rb === '') {
             return false;
         }
+
         $rb = rtrim($rb, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         return str_starts_with($rp, $rb);
     }

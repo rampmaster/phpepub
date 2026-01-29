@@ -361,6 +361,11 @@ class EpubAdapter implements FormatAdapterInterface
                     if ($attr->prefix === 'epub') {
                         $attrsToRemove[] = $attr;
                     }
+                    // Also remove 'charset' attribute from meta tags if present (except for content-type which is handled differently)
+                    // The error message says: attribute "charset" not allowed here
+                    if ($attr->nodeName === 'charset') {
+                        $attrsToRemove[] = $attr;
+                    }
                 }
                 foreach ($attrsToRemove as $attr) {
                     $element->removeAttributeNode($attr);
