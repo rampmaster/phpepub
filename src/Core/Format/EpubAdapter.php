@@ -358,12 +358,12 @@ class EpubAdapter implements FormatAdapterInterface
                 // We need to collect attributes to remove first to avoid modification during iteration issues
                 $attrsToRemove = [];
                 foreach ($element->attributes as $attr) {
-                    if (str_starts_with($attr->nodeName, 'epub:')) {
-                        $attrsToRemove[] = $attr->nodeName;
+                    if ($attr->prefix === 'epub') {
+                        $attrsToRemove[] = $attr;
                     }
                 }
-                foreach ($attrsToRemove as $attrName) {
-                    $element->removeAttribute($attrName);
+                foreach ($attrsToRemove as $attr) {
+                    $element->removeAttributeNode($attr);
                 }
             }
         }

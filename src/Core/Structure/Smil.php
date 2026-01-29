@@ -56,7 +56,7 @@ class Smil
         $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n";
         $xml .= '<smil xmlns="http://www.w3.org/ns/SMIL" version="3.0" profile="http://www.ipdf.org/epub/30/profile/content/">' . "\n";
         $xml .= "\t<body>\n";
-        
+
         // We assume the whole SMIL file corresponds to one sequence (seq) of parallel (par) elements.
         // A more complex implementation might support nested seq/par.
         $xml .= "\t\t<seq id=\"seq1\" epub:textref=\"{$this->textSrc}\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n";

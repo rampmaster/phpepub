@@ -232,6 +232,7 @@ class FileHelper
         if ($rb === false) {
             $rb = Path::canonicalize($baseDir);
         }
+        // If $rp is still false, it means the path doesn't exist and couldn't be canonicalized as absolute
         if ($rp === false || $rb === false) {
             return false;
         }

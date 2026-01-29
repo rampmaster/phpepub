@@ -28,7 +28,7 @@ class AccessibilityMetadataTest extends TestCase
 
         // Get the book content (zip)
         $zipContent = $book->getBook();
-        
+
         // Save to temp file to inspect
         $tmpFile = tempnam(sys_get_temp_dir(), 'epub_test_');
         file_put_contents($tmpFile, $zipContent);
