@@ -60,7 +60,7 @@ jobs:
           fi
 
           # Download epubcheck release as fallback
-          EPUB_VER=5.3.0
+          EPUB_VER=5.1.0
           ZIP=epubcheck-${EPUB_VER}.zip
           URL=https://github.com/w3c/epubcheck/releases/download/v${EPUB_VER}/${ZIP}
           mkdir -p /tmp/epubcheck_download
@@ -88,53 +88,14 @@ jobs:
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist --no-scripts
 
-      - name: Run static analysis and tests
+      - name: Run CI script
         env:
           COMPOSER_ALLOW_SUPERUSER: 1
-        run: |
-          # run linters and tests via composer scripts
-          composer run-script phpcs || true
-          composer run-script phpstan || true
-          composer run-script test
+        run: composer run-script ci
 
-      - name: Run epubcheck against generated epubs
+      - name: Upload epubs
         if: always()
-        run: |
-          set -e
-          BUILD_DIR=tests/build
-          if [ ! -d "$BUILD_DIR" ]; then
-            echo "No build directory found, skipping epubcheck"
-            exit 0
-          fi
-
-          found=0
-          for f in $(find "$BUILD_DIR" -type f -name '*.epub' -print); do
-            found=1
-            echo "Validating $f"
-            if [ "${{ steps.epubcheck_probe.outputs.epubcheck_bin }}" == '1' ]; then
-              epubcheck "$f" || (echo "epubcheck failed for $f"; exit 1)
-            else
-              JAR="${{ steps.epubcheck_probe.outputs.epubcheck_jar }}"
-              if [ -z "$JAR" ]; then
-                echo "No epubcheck jar available to validate $f"; exit 1
-              fi
-              java -jar "$JAR" "$f" || (echo "epubcheck (jar) failed for $f"; exit 1)
-            fi
-            # remove artifact after validation
-            rm -f "$f"
-          done
-          if [ "$found" -eq 0 ]; then
-            echo "No epub artifacts found in $BUILD_DIR"
-          fi
-
-      - name: Clean tests/build
-        if: always()
-        run: |
-          rm -rf tests/build || true
-
-      - name: Upload test logs (optional)
-        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: phpunit-fail-logs
-          path: tests/build || true
+          name: epubs-${{ matrix.php }}
+          path: tests/build/*.epub

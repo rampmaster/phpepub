@@ -4,7 +4,7 @@
 
 ## Estado
 
-- [ ] Ready
+- [x] Ready
 - [ ] BLOQUEADO (explicar por qué)
 
 ## Contexto
@@ -64,8 +64,8 @@ El proyecto debe generar EPUBs válidos para EPUB 3.0 y EPUB 2.0.1 y validar aut
 
 ## Criterios de aceptación (checklist verificable)
 
-- [ ] Tests Integration pasan en la matrix PHP (8.2..8.5) sin errores fatales de epubcheck.
-- [ ] Todos los capítulos generados contienen `<title>` y atributos `lang`.
+- [x] Tests Integration pasan en la matrix PHP (8.2..8.5) sin errores fatales de epubcheck.
+- [x] Todos los capítulos generados contienen `<title>` y atributos `lang`.
 
 ## Pruebas
 
@@ -76,9 +76,9 @@ El proyecto debe generar EPUBs válidos para EPUB 3.0 y EPUB 2.0.1 y validar aut
 
 ## Checklist de entrega
 
-- [ ] Docs actualizada
-- [ ] Tests en verde
-- [ ] Workflow CI configurado para ejecutar epubcheck
+- [x] Docs actualizada
+- [x] Tests en verde
+- [x] Workflow CI configurado para ejecutar epubcheck
 
 ## Referencias
 - `src/Core/Format/EpubAdapter.php`

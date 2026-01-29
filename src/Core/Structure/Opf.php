@@ -137,7 +137,7 @@ class Opf
             $opf .= "\txmlns:$ns=\"$uri\"\n";
         }
 
-        if ($this->bookVersion === EPub::BOOK_VERSION_EPUB3 && sizeof($this->prefixes) > 0) {
+        if (($this->bookVersion === EPub::BOOK_VERSION_EPUB3 || $this->bookVersion === EPub::BOOK_VERSION_EPUB301 || $this->bookVersion === EPub::BOOK_VERSION_EPUB31) && sizeof($this->prefixes) > 0) {
             $opf .= "\tprefix=\"";
             $addSpace = false;
             foreach ($this->prefixes as $name => $uri) {
