@@ -2316,10 +2316,7 @@ class EPub
         $DCdate->addOpfAttr("event", "publication");
         $this->opf->metadata->addDublinCore($DCdate);
 
-        // EPUB 3.1 and 3.2 requires dcterms:modified
-        if (str_starts_with($this->bookVersion, '3.') && $this->bookVersion !== EPub::BOOK_VERSION_EPUB3 && $this->bookVersion !== EPub::BOOK_VERSION_EPUB301) {
-            $this->opf->addMetaProperty("dcterms:modified", gmdate("Y-m-d\TH:i:s\Z", $this->date));
-        }
+        // Note: dcterms:modified is handled in Metadata::finalize() for all EPUB 3.x versions
 
         // Accessibility Metadata
         if ($this->accessibilitySummary !== null) {

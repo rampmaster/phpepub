@@ -366,6 +366,10 @@ class EpubAdapter implements FormatAdapterInterface
                     if ($attr->nodeName === 'charset') {
                         $attrsToRemove[] = $attr;
                     }
+                    // Remove 'epub:type' specifically if prefix check fails (sometimes DOMDocument is tricky with namespaces)
+                    if ($attr->nodeName === 'epub:type') {
+                        $attrsToRemove[] = $attr;
+                    }
                 }
                 foreach ($attrsToRemove as $attr) {
                     $element->removeAttributeNode($attr);
