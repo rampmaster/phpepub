@@ -51,26 +51,26 @@
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
-    },
-    "scripts": {
-      "phpcs": "phpcs -s",
-      "phpstan": "phpstan",
-      "epubcheck:version": "php bin/console epubcheck:version",
-      "epubcheck:validate": "php bin/console epubcheck:validate",
-      "test": "phpunit",
-      "ci": [
-        "@phpcs",
-        "@phpstan",
-        "@test"
-      ]
-    },
-    "scripts-descriptions": {
-      "phpcs": "Run PHP Code Sniffer",
-      "phpstan": "Run PHPStan (with Larastan extension)",
-      "epubcheck:version": "Print epubcheck version (java -jar epubcheck/epubcheck.jar or system binary)",
-      "epubcheck:validate": "Validate EPUB_FILE env var using system epubcheck",
-      "test": "Run the PHPUnit tests",
-      "ci": "Run all CI tests"
     }
+  },
+  "scripts": {
+    "phpcs": "phpcs -s",
+    "phpstan": "phpstan",
+    "epubcheck:version": "php bin/console epubcheck:version",
+    "epubcheck:validate": "php bin/console epubcheck:validate",
+    "test": "phpunit",
+    "ci": [
+      "@phpcs",
+      "@phpstan",
+      "@test"
+    ]
+  },
+  "scripts-descriptions": {
+    "phpcs": "Run PHP Code Sniffer",
+    "phpstan": "Run PHPStan (with Larastan extension)",
+    "epubcheck:version": "Print epubcheck version (java -jar epubcheck/epubcheck.jar or system binary)",
+    "epubcheck:validate": "Validate EPUB_FILE env var using system epubcheck",
+    "test": "Run the PHPUnit tests",
+    "ci": "Run all CI tests"
   }
 }
