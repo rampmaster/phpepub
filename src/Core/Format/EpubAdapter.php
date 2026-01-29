@@ -52,10 +52,8 @@ class EpubAdapter implements FormatAdapterInterface {
                 $ccontent = "<h1>$cname</h1><p>Empty chapter</p>";
             }
 
-            // Ensure content is XHTML-like; wrap with basic header/footer if missing
-            if (strpos($ccontent, '<html') === false) {
-                $ccontent = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head>\n<body>" . $ccontent . "</body>\n</html>";
-            }
+            // Ensure content is XHTML-like and include chapter title in <title>
+            $ccontent = $this->convertToXhtml($ccontent, $language, $cname);
 
             $book->addChapter($cname, $cfile, $ccontent);
             $i++;
@@ -233,7 +231,7 @@ class EpubAdapter implements FormatAdapterInterface {
     /**
      * Convert HTML content to valid XHTML for EPUB.
      */
-    private function convertToXhtml(string $content, string $language = 'en'): string {
+    private function convertToXhtml(string $content, string $language = 'en', string $title = ''): string {
         // Quick path: if snippet has no HTML root, treat as body fragment
         $isFragment = (stripos($content, '<html') === false);
 
@@ -261,8 +259,8 @@ class EpubAdapter implements FormatAdapterInterface {
         $meta = $x->createElement('meta');
         $meta->setAttribute('charset', 'utf-8');
         $head->appendChild($meta);
-        $title = $x->createElement('title', '');
-        $head->appendChild($title);
+        $titleElement = $x->createElement('title', $title);
+        $head->appendChild($titleElement);
         $html->appendChild($head);
 
         $body = $x->createElement('body');

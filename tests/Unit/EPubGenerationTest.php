@@ -32,7 +32,8 @@ class EPubGenerationTest extends TestCase {
 
     public function testGenerateEpubFromFixture() {
         $adapter = new EpubAdapter();
-        $fixture = __DIR__ . '/../../assets/fixtures/simple/index.html';
+        // corrected fixture path to repository fixtures
+        $fixture = __DIR__ . '/fixtures/simple/index.html';
         $output = $adapter->generate([
             'title' => 'Test Fixture',
             'language' => 'en',
