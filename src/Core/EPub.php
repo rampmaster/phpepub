@@ -618,7 +618,7 @@ class EPub
             if ($externalReferences !== EPub::EXTERNAL_REF_IGNORE) {
                 $htmlDirInfo = pathinfo($fileName);
                 $htmlDir = preg_replace('#^[/\.]+#i', "", $htmlDirInfo["dirname"] . "/");
-                $this->processChapterExternalReferences($pageData, $externalReferences, $baseDir, $htmlDir);
+                $this->contentProcessor->processChapterExternalReferences($pageData, $externalReferences, $baseDir, $htmlDir);
             }
             $this->addFile($fileName, "ref_" . $reference, $pageData, "application/xhtml+xml");
             $this->extractIdAttributes("ref_" . $reference, $pageData);

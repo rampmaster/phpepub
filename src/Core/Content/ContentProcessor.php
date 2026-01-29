@@ -7,8 +7,10 @@ namespace Rampmaster\EPub\Core\Content;
 use Rampmaster\EPub\Core\EPub;
 use Rampmaster\EPub\Helpers\FileHelper;
 use Rampmaster\EPub\Helpers\ImageHelper;
+use Rampmaster\EPub\Helpers\MimeHelper;
 use Rampmaster\EPub\Helpers\StringHelper;
 use DOMDocument;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * Handles processing of HTML content for chapters.
@@ -65,7 +67,7 @@ class ContentProcessor
                 $nodeName = $htmlNode->item(0)->attributes->item($index)->nodeName;
                 $nodeValue = $htmlNode->item(0)->attributes->item($index)->nodeValue;
 
-                if ($nodeName !== "xmlns") {
+                if ($nodeName != "xmlns") {
                     $htmlNS .= " $nodeName=\"$nodeValue\"";
                 }
             }
@@ -193,7 +195,7 @@ class ContentProcessor
         $links = $xmlDoc->getElementsByTagName("link");
         $linkCount = $links->length;
         for ($linkIdx = 0; $linkIdx < $linkCount; $linkIdx++) {
-            /** @var $link \DOMElement */
+            /** @var \DOMElement $link */
             $link = $links->item($linkIdx);
             $source = $link->attributes->getNamedItem("href")->nodeValue;
             $sourceData = null;
@@ -263,7 +265,7 @@ class ContentProcessor
         $itemCount = $images->length;
 
         for ($idx = 0; $idx < $itemCount; $idx++) {
-            /** @var $img \DOMElement */
+            /** @var \DOMElement $img */
             $img = $images->item($idx);
 
             if ($externalReferences === EPub::EXTERNAL_REF_REMOVE_IMAGES) {
@@ -336,7 +338,7 @@ class ContentProcessor
         $images = $xmlDoc->getElementsByTagName("source");
         $itemCount = $images->length;
         for ($idx = 0; $idx < $itemCount; $idx++) {
-            /** @var $img \DOMElement */
+            /** @var \DOMElement $img */
             $img = $images->item($idx);
             if ($externalReferences === EPub::EXTERNAL_REF_REMOVE_IMAGES) {
                 $postProcDomElememts[] = $img;

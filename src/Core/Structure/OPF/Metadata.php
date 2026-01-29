@@ -64,14 +64,16 @@ class Metadata
     public function addMeta($name, $content)
     {
         $name = is_string($name) ? trim($name) : null;
-        if (isset($name)) {
-            $content = is_string($content) ? trim($content) : null;
+        if ($name === null) {
+            return;
         }
-        if (isset($content)) {
-            $this->meta[] = [
-                $name => $content,
-            ];
+        $content = is_string($content) ? trim($content) : null;
+        if ($content === null) {
+            return;
         }
+        $this->meta[] = [
+            $name => $content,
+        ];
     }
 
     /**
@@ -84,23 +86,26 @@ class Metadata
     public function addMetaProperty($name, $content)
     {
         $name = is_string($name) ? trim($name) : null;
-        if (isset($name)) {
-            $content = is_string($content) ? trim($content) : null;
+        if ($name === null) {
+            return;
         }
-        if (isset($content)) {
-            // Evitar duplicados por nombre de propiedad (p. ej. dcterms:modified)
-            foreach ($this->metaProperties as $existing) {
-                $existingName = array_key_first($existing);
-                if ($existingName === $name) {
-                    // Ya existe la propiedad, no la añadimos de nuevo
-                    return;
-                }
+        $content = is_string($content) ? trim($content) : null;
+        if ($content === null) {
+            return;
+        }
+        // Evitar duplicados exactos (mismo nombre Y mismo contenido)
+        foreach ($this->metaProperties as $existing) {
+            $existingName = array_key_first($existing);
+            $existingContent = $existing[$existingName] ?? null;
+            if ($existingName === $name && $existingContent === $content) {
+                // Ya existe exactamente la misma propiedad con el mismo valor
+                return;
             }
-
-            $this->metaProperties[] = [
-                $name => $content,
-            ];
         }
+
+        $this->metaProperties[] = [
+            $name => $content,
+        ];
     }
 
     /**
