@@ -1,0 +1,140 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["8.2", "8.3", "8.4", "8.5"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: zip, dom
+          tools: composer:v2
+
+      - name: Get composer cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install system packages (OpenJDK)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jre-headless unzip curl
+
+      - name: Try install epubcheck via apt
+        run: |
+          # attempt to install epubcheck from apt repositories; do not fail the job here
+          sudo apt-get install -y epubcheck || true
+
+      - name: Probe or download epubcheck (binary or jar)
+        id: epubcheck_probe
+        run: |
+          set -e
+          # prefer system binary
+          if command -v epubcheck >/dev/null 2>&1; then
+            echo "epubcheck_bin=1" >> $GITHUB_OUTPUT
+            echo "Found epubcheck binary: $(epubcheck --version 2>&1 | head -n1)"
+            exit 0
+          fi
+
+          # otherwise look for an existing extracted JAR at /opt/epubcheck/epubcheck.jar
+          if [ -f /opt/epubcheck/epubcheck.jar ]; then
+            echo "epubcheck_jar=/opt/epubcheck/epubcheck.jar" >> $GITHUB_OUTPUT
+            echo "Found epubcheck jar at /opt/epubcheck/epubcheck.jar"
+            exit 0
+          fi
+
+          # Download epubcheck release as fallback
+          EPUB_VER=5.3.0
+          ZIP=epubcheck-${EPUB_VER}.zip
+          URL=https://github.com/w3c/epubcheck/releases/download/v${EPUB_VER}/${ZIP}
+          mkdir -p /tmp/epubcheck_download
+          curl -fsSL -o /tmp/epubcheck_download/${ZIP} ${URL}
+          unzip -q /tmp/epubcheck_download/${ZIP} -d /tmp/epubcheck_download
+          JARPATH=$(find /tmp/epubcheck_download -type f -name 'epubcheck*.jar' | head -n1)
+          if [ -z "$JARPATH" ]; then
+            echo "Could not find epubcheck jar after download" >&2
+            exit 1
+          fi
+          mkdir -p /opt/epubcheck
+          cp "$JARPATH" /opt/epubcheck/epubcheck.jar
+          echo "epubcheck_jar=/opt/epubcheck/epubcheck.jar" >> $GITHUB_OUTPUT
+
+      - name: Show epubcheck version (jar or binary)
+        run: |
+          if [ "${{ steps.epubcheck_probe.outputs.epubcheck_bin }}" == '1' ]; then
+            echo "Using system epubcheck binary"
+            epubcheck --version || true
+          else
+            echo "Using epubcheck JAR: ${{ steps.epubcheck_probe.outputs.epubcheck_jar }}"
+            java -jar "${{ steps.epubcheck_probe.outputs.epubcheck_jar }}" --version || true
+          fi
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-scripts
+
+      - name: Run static analysis and tests
+        env:
+          COMPOSER_ALLOW_SUPERUSER: 1
+        run: |
+          # run linters and tests via composer scripts
+          composer run-script phpcs || true
+          composer run-script phpstan || true
+          composer run-script test
+
+      - name: Run epubcheck against generated epubs
+        if: always()
+        run: |
+          set -e
+          BUILD_DIR=tests/build
+          if [ ! -d "$BUILD_DIR" ]; then
+            echo "No build directory found, skipping epubcheck"
+            exit 0
+          fi
+
+          found=0
+          for f in $(find "$BUILD_DIR" -type f -name '*.epub' -print); do
+            found=1
+            echo "Validating $f"
+            if [ "${{ steps.epubcheck_probe.outputs.epubcheck_bin }}" == '1' ]; then
+              epubcheck "$f" || (echo "epubcheck failed for $f"; exit 1)
+            else
+              JAR="${{ steps.epubcheck_probe.outputs.epubcheck_jar }}"
+              if [ -z "$JAR" ]; then
+                echo "No epubcheck jar available to validate $f"; exit 1
+              fi
+              java -jar "$JAR" "$f" || (echo "epubcheck (jar) failed for $f"; exit 1)
+            fi
+            # remove artifact after validation
+            rm -f "$f"
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "No epub artifacts found in $BUILD_DIR"
+          fi
+
+      - name: Clean tests/build
+        if: always()
+        run: |
+          rm -rf tests/build || true
+
+      - name: Upload test logs (optional)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpunit-fail-logs
+          path: tests/build || true

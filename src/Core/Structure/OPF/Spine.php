@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Structure\OPF;
 
 /**
@@ -8,7 +11,8 @@ namespace Rampmaster\EPub\Core\Structure\OPF;
  * @copyright 2014- A. Grandt
  * @license   GNU LGPL 2.1
  */
-class Spine {
+class Spine
+{
     private $itemrefs = [];
 
     private $toc = null;
@@ -18,7 +22,8 @@ class Spine {
      *
      * @param string $toc
      */
-    public function __construct($toc = "ncx") {
+    public function __construct($toc = "ncx")
+    {
         $this->setToc($toc);
     }
 
@@ -28,7 +33,8 @@ class Spine {
      *
      * @param string $toc
      */
-    public function setToc($toc) {
+    public function setToc($toc)
+    {
         $this->toc = is_string($toc) ? trim($toc) : null;
     }
 
@@ -37,7 +43,8 @@ class Spine {
      *
      * @return void
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         unset($this->itemrefs, $this->toc);
     }
 
@@ -47,8 +54,10 @@ class Spine {
      *
      * @param Itemref $itemref
      */
-    public function addItemref($itemref) {
-        if ($itemref != null
+    public function addItemref($itemref)
+    {
+        if (
+            $itemref != null
             && is_object($itemref)
             && $itemref instanceof Itemref
             && !isset($this->itemrefs[$itemref->getIdref()])
@@ -63,7 +72,8 @@ class Spine {
      *
      * @return string
      */
-    public function finalize() {
+    public function finalize()
+    {
         $spine = "\n\t<spine toc=\"" . $this->toc . "\">\n";
         foreach ($this->itemrefs as $itemref) {
             /** @var $itemref ItemRef */

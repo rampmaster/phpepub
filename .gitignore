@@ -1,6 +1,8 @@
 composer.lock
-phpunit.xml
 vendor/
 .idea
 .php-cs-fixer.cache
 *.epub
+build
+!build/.gitkeep
+epubcheck

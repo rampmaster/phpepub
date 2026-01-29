@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHPePub
  * <FileHelper.php description here>
@@ -8,14 +9,16 @@
  * @license   GNU LGPL 2.1
  */
 
-namespace Rampmaster\EPub\Helpers;
+declare(strict_types=1);
 
+namespace Rampmaster\EPub\Helpers;
 
 use Rampmaster\EPub\Core\EPub;
 use Rampmaster\EPub\Core\StaticData;
 use Symfony\Component\Filesystem\Path;
 
-class FileHelper {
+class FileHelper
+{
     protected static $isCurlInstalled;
 
     protected static $isFileGetContentsInstalled;
@@ -25,7 +28,8 @@ class FileHelper {
     /**
      * @return mixed
      */
-    public static function getIsCurlInstalled() {
+    public static function getIsCurlInstalled()
+    {
         if (!isset(self::$isCurlInstalled)) {
             self::$isCurlInstalled = extension_loaded('curl') && function_exists('curl_version');
         }
@@ -35,7 +39,8 @@ class FileHelper {
     /**
      * @return mixed
      */
-    public static function getIsFileGetContentsInstalled() {
+    public static function getIsFileGetContentsInstalled()
+    {
         if (!isset(self::$isFileGetContentsInstalled)) {
             self::$isFileGetContentsInstalled = function_exists('file_get_contents');
         }
@@ -45,7 +50,8 @@ class FileHelper {
     /**
      * @return mixed
      */
-    public static function getIsFileGetContentsExtInstalled() {
+    public static function getIsFileGetContentsExtInstalled()
+    {
         if (!isset(self::$isFileGetContentsExtInstalled)) {
             self::$isFileGetContentsExtInstalled = self::getIsFileGetContentsInstalled() && ini_get('allow_url_fopen');
         }
@@ -59,7 +65,8 @@ class FileHelper {
      *
      * @return mixed|string
      */
-    public static function sanitizeFileName($fileName) {
+    public static function sanitizeFileName($fileName)
+    {
         $fileName1 = str_replace(StaticData::$forbiddenCharacters, '', $fileName);
         $fileName2 = preg_replace('/[\s-]+/', '-', $fileName1);
 
@@ -74,7 +81,8 @@ class FileHelper {
      *
      * @return bool|mixed|null|string
      */
-    public static function getFileContents($source, $toTempFile = false) {
+    public static function getFileContents($source, $toTempFile = false)
+    {
         $isExternal = preg_match('#^(http|ftp)s?://#i', $source) == 1;
 
         if ($isExternal && FileHelper::getIsCurlInstalled()) {
@@ -144,7 +152,65 @@ class FileHelper {
      *
      * @return string normalized filename
      */
-    public static function normalizeFileName($fileName) {
+    public static function normalizeFileName($fileName)
+    {
         return preg_replace('#^[/\.]+#i', "", Path::canonicalize($fileName));
+    }
+
+    /**
+     * Sanitize a path intended to be stored in the EPUB ZIP archive.
+     * Returns the normalized safe path, or FALSE if the path is unsafe.
+     *
+     * @param string $fileName
+     * @param bool $allowMeta Allow entries under META-INF/ (default false)
+     * @return string|false
+     */
+    public static function sanitizeZipPath(string $fileName, bool $allowMeta = false)
+    {
+        // Remove NUL bytes and normalize separators
+        $fileName = str_replace("\0", '', $fileName);
+        $fileName = str_replace('\\', '/', $fileName);
+
+        // Canonicalize (resolves .. and .)
+        $canonical = Path::canonicalize($fileName);
+
+        // Remove leading ./ or / sequences
+        $canonical = preg_replace('#^[/\\\.]+#', '', $canonical);
+
+        // Reject empty
+        if ($canonical === '' || $canonical === '.' || $canonical === '..') {
+            return false;
+        }
+
+        // Reject any remaining upward traversal segments
+        $parts = explode('/', $canonical);
+        foreach ($parts as $part) {
+            if ($part === '..') {
+                return false;
+            }
+        }
+
+        // Reject absolute Windows drive letters
+        if (preg_match('#^[A-Za-z]:#', $canonical)) {
+            return false;
+        }
+
+        // If not allowing META-INF, ensure path does not start with META-INF/
+        if (!$allowMeta) {
+            if (str_starts_with(strtolower($canonical), 'meta-inf/')) {
+                return false;
+            }
+        }
+
+        // Final sanitize: remove disallowed characters from each segment
+        $segments = array_map(function ($seg) {
+            return preg_replace('/[\x00-\x1F\x7F]/', '', $seg);
+        }, $parts);
+
+        $safe = implode('/', $segments);
+        // Prevent leading dots, hyphens issues
+        $safe = trim($safe, './\\ ');
+
+        return $safe;
     }
 }

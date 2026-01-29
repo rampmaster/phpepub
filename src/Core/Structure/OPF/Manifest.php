@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Structure\OPF;
 
 use Rampmaster\EPub\Core\EPub;
@@ -10,13 +13,15 @@ use Rampmaster\EPub\Core\EPub;
  * @copyright 2014- A. Grandt
  * @license   GNU LGPL 2.1
  */
-class Manifest {
+class Manifest
+{
     private $items = [];
 
     /**
      * Class constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
     }
 
     /**
@@ -24,7 +29,8 @@ class Manifest {
      *
      * @return void
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         unset($this->items);
     }
 
@@ -34,7 +40,8 @@ class Manifest {
      *
      * @param Item $item
      */
-    public function addItem($item) {
+    public function addItem($item)
+    {
         if ($item != null && is_object($item) && $item instanceof Item) {
             $this->items[] = $item;
         }
@@ -46,7 +53,8 @@ class Manifest {
      *
      * @return string
      */
-    public function finalize($bookVersion = EPub::BOOK_VERSION_EPUB2) {
+    public function finalize($bookVersion = EPub::BOOK_VERSION_EPUB2)
+    {
         $manifest = "\n\t<manifest>\n";
         foreach ($this->items as $item) {
             /** @var $item Item */
@@ -59,7 +67,8 @@ class Manifest {
     /**
      * @return array
      */
-    public function getItems() {
+    public function getItems()
+    {
         return $this->items;
     }
 }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core;
 
 /**
@@ -8,7 +11,8 @@ namespace Rampmaster\EPub\Core;
  * @copyright 2012- A. Grandt
  * @license   GNU LGPL 2.1
  */
-class Logger {
+class Logger
+{
     private $log = "";
 
     private $tStart;
@@ -27,7 +31,8 @@ class Logger {
      * @param string $name
      * @param bool $isLogging
      */
-    public function __construct($name = null, $isLogging = false) {
+    public function __construct($name = null, $isLogging = false)
+    {
         if ($name === null) {
             $this->name = "";
         } else {
@@ -37,7 +42,8 @@ class Logger {
         $this->start();
     }
 
-    public function start() {
+    public function start()
+    {
         /* Prepare Logging. Just in case it's used. later */
         if ($this->isLogging) {
             $this->tStart = gettimeofday();
@@ -47,7 +53,8 @@ class Logger {
         }
     }
 
-    public function logLine($line) {
+    public function logLine($line)
+    {
         if ($this->isLogging) {
             $tTemp = gettimeofday();
             $tS = $this->tStart['sec'] + (((int)($this->tStart['usec'] / 100)) / 10000);
@@ -70,11 +77,13 @@ class Logger {
      * @return void
      * @TODO make sure elements in the destructor match the current class elements
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         unset($this->log);
     }
 
-    public function dumpInstalledModules() {
+    public function dumpInstalledModules()
+    {
         if ($this->isLogging) {
             $isCurlInstalled = extension_loaded('curl') && function_exists('curl_version');
             $isGdInstalled = extension_loaded('gd') && function_exists('gd_info');
@@ -90,7 +99,8 @@ class Logger {
         }
     }
 
-    public function getLog() {
+    public function getLog()
+    {
         return $this->log;
     }
 
@@ -99,7 +109,8 @@ class Logger {
      *
      * @return string
      */
-    public function boolYN($isCurlInstalled) {
+    public function boolYN($isCurlInstalled)
+    {
         return ($isCurlInstalled ? "Yes" : "No");
     }
 }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core;
 
 use DOMDocument;
@@ -14,7 +17,8 @@ use DOMDocument;
  * @link      http://www.phpclasses.org/package/6115
  * @link      https://github.com/Grandt/PHPePub
  */
-class EPubChapterSplitter {
+class EPubChapterSplitter
+{
     private $splitDefaultSize = 250000;
 
     private $bookVersion = EPub::BOOK_VERSION_EPUB2;
@@ -25,7 +29,8 @@ class EPubChapterSplitter {
      *
      * @param string $bookVersion
      */
-    public function setVersion($bookVersion) {
+    public function setVersion($bookVersion)
+    {
         $this->bookVersion = is_string($bookVersion) ? trim($bookVersion) : EPub::BOOK_VERSION_EPUB2;
     }
 
@@ -37,7 +42,8 @@ class EPubChapterSplitter {
      *
      * @return void
      */
-    public function setSplitSize($size) {
+    public function setSplitSize($size)
+    {
         $this->splitDefaultSize = (int)$size;
         if ($size < 10240) {
             $this->splitDefaultSize = 10240; // Making the file smaller than 10k is not a good idea.
@@ -49,7 +55,8 @@ class EPubChapterSplitter {
      *
      * @return int $size
      */
-    public function getSplitSize() {
+    public function getSplitSize()
+    {
         return $this->splitDefaultSize;
     }
 
@@ -65,7 +72,8 @@ class EPubChapterSplitter {
      *
      * @return array with 1 or more parts
      */
-    public function splitChapter($chapter, $splitOnSearchString = false, $searchString = '/^Chapter\\ /i') {
+    public function splitChapter($chapter, $splitOnSearchString = false, $searchString = '/^Chapter\\ /i')
+    {
         $chapterData = [];
         $isSearchRegexp = $splitOnSearchString && (preg_match('#^(\D|\S|\W).+\1[imsxeADSUXJu]*$#m', $searchString) == 1);
         if ($splitOnSearchString && !$isSearchRegexp) {
@@ -146,7 +154,7 @@ class EPubChapterSplitter {
                         reset($domPath);
                         reset($domClonedPath);
 
-                        foreach($domClonedPath as $k => $v) {
+                        foreach ($domClonedPath as $k => $v) {
                             /** @var $v \DOMNode */
                             $newParent = $v->cloneNode(false);
                             $curParent->appendChild($newParent);

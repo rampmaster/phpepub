@@ -1,0 +1,156 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Rampmaster\\\\EPub\\\\Core\\\\EPub\\:\\:saveBook\\(\\) should return string but returns false\\.$#"
+			count: 1
+			path: src/Core/EPub.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$Zip \\\\ZipArchive\\)\\: Unexpected token \"\\$Zip\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/EPub.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$firstChapterNavPoint NavPoint\\)\\: Unexpected token \"\\$firstChapterNavPoint\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/EPub.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$img \\\\DOMElement\\)\\: Unexpected token \"\\$img\", expected type at offset 9$#"
+			count: 2
+			path: src/Core/EPub.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$link \\\\DOMElement\\)\\: Unexpected token \"\\$link\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/EPub.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$navPoint NavPoint\\)\\: Unexpected token \"\\$navPoint\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/EPub.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$ncx Ncx\\)\\: Unexpected token \"\\$ncx\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/EPub.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$opf Opf\\)\\: Unexpected token \"\\$opf\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/EPub.php
+
+		-
+			message: "#^Property Rampmaster\\\\EPub\\\\Core\\\\EPub\\:\\:\\$dangermode is never read, only written\\.$#"
+			count: 1
+			path: src/Core/EPub.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$v \\\\DOMNode\\)\\: Unexpected token \"\\$v\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/EPubChapterSplitter.php
+
+		-
+			message: "#^Right side of && is always true\\.$#"
+			count: 1
+			path: src/Core/Format/EpubAdapter.php
+
+		-
+			message: "#^Method Rampmaster\\\\EPub\\\\Core\\\\Structure\\\\NCX\\\\NavMap\\:\\:addNavPoint\\(\\) should return Rampmaster\\\\EPub\\\\Core\\\\Structure\\\\NCX\\\\NavMap but returns Rampmaster\\\\EPub\\\\Core\\\\Structure\\\\NCX\\\\NavPoint\\.$#"
+			count: 1
+			path: src/Core/Structure/NCX/NavMap.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$navPoint NavPoint\\)\\: Unexpected token \"\\$navPoint\", expected type at offset 9$#"
+			count: 2
+			path: src/Core/Structure/NCX/NavMap.php
+
+		-
+			message: "#^Method Rampmaster\\\\EPub\\\\Core\\\\Structure\\\\NCX\\\\NavPoint\\:\\:addNavPoint\\(\\) should return \\$this\\(Rampmaster\\\\EPub\\\\Core\\\\Structure\\\\NCX\\\\NavPoint\\) but returns Rampmaster\\\\EPub\\\\Core\\\\Structure\\\\NCX\\\\NavPoint\\.$#"
+			count: 1
+			path: src/Core/Structure/NCX/NavPoint.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$navPoint NavPoint\\)\\: Unexpected token \"\\$navPoint\", expected type at offset 9$#"
+			count: 2
+			path: src/Core/Structure/NCX/NavPoint.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$parent AbstractNavEntry\\)\\: Unexpected token \"\\$parent\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/Structure/NCX/NavPoint.php
+
+		-
+			message: "#^Parameter \\#1 \\$properties of method Rampmaster\\\\EPub\\\\Core\\\\Structure\\\\OPF\\\\Item\\:\\:setProperties\\(\\) expects string, null given\\.$#"
+			count: 1
+			path: src/Core/Structure/OPF/Item.php
+
+		-
+			message: "#^Variable \\$attrName might not be defined\\.$#"
+			count: 1
+			path: src/Core/Structure/OPF/MetaValue.php
+
+		-
+			message: "#^Variable \\$opfAttrName might not be defined\\.$#"
+			count: 1
+			path: src/Core/Structure/OPF/MetaValue.php
+
+		-
+			message: "#^Variable \\$name might not be defined\\.$#"
+			count: 2
+			path: src/Core/Structure/OPF/Metadata.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$guide Guide\\)\\: Unexpected token \"\\$guide\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/Structure/Opf.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$manifest Manifest\\)\\: Unexpected token \"\\$manifest\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/Structure/Opf.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$metadata Metadata\\)\\: Unexpected token \"\\$metadata\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/Structure/Opf.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$spine Spine\\)\\: Unexpected token \"\\$spine\", expected type at offset 9$#"
+			count: 1
+			path: src/Core/Structure/Opf.php
+
+		-
+			message: "#^Parameter \\#1 \\$haystack of static method Grandt\\\\BinStringStatic\\:\\:startsWith\\(\\) expects string, null given\\.$#"
+			count: 1
+			path: src/Core/Structure/Opf.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function trim expects string, SimpleXMLElement given\\.$#"
+			count: 1
+			path: src/Helpers/ImageHelper.php
+
+		-
+			message: "#^Parameter \\#1 \\$width of function imagecreatetruecolor expects int, float given\\.$#"
+			count: 2
+			path: src/Helpers/ImageHelper.php
+
+		-
+			message: "#^Parameter \\#2 \\$height of function imagecreatetruecolor expects int, float given\\.$#"
+			count: 2
+			path: src/Helpers/ImageHelper.php
+
+		-
+			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, object given\\.$#"
+			count: 1
+			path: src/Helpers/ImageHelper.php
+
+		-
+			message: "#^Parameter \\#7 \\$dst_width of function imagecopyresampled expects int, float given\\.$#"
+			count: 2
+			path: src/Helpers/ImageHelper.php
+
+		-
+			message: "#^Parameter \\#8 \\$dst_height of function imagecopyresampled expects int, float given\\.$#"
+			count: 2
+			path: src/Helpers/ImageHelper.php

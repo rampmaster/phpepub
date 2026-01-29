@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Structure\OPF;
 
 use Rampmaster\EPub\Core\EPub;
@@ -10,7 +13,8 @@ use Rampmaster\EPub\Core\EPub;
  * @copyright 2014- A. Grandt
  * @license   GNU LGPL 2.1
  */
-class Item {
+class Item
+{
     private $id = null;
 
     private $href = null;
@@ -37,7 +41,8 @@ class Item {
      * @param      $mediaType
      * @param null $properties
      */
-    public function __construct($id, $href, $mediaType, $properties = null) {
+    public function __construct($id, $href, $mediaType, $properties = null)
+    {
         $this->setId($id);
         $this->setHref($href);
         $this->setMediaType($mediaType);
@@ -50,7 +55,8 @@ class Item {
      *
      * @param string $id
      */
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = is_string($id) ? trim($id) : null;
     }
 
@@ -60,7 +66,8 @@ class Item {
      *
      * @param string $href
      */
-    public function setHref($href) {
+    public function setHref($href)
+    {
         $this->href = is_string($href) ? trim($href) : null;
     }
 
@@ -70,7 +77,8 @@ class Item {
      *
      * @param string $mediaType
      */
-    public function setMediaType($mediaType) {
+    public function setMediaType($mediaType)
+    {
         $this->mediaType = is_string($mediaType) ? trim($mediaType) : null;
     }
 
@@ -80,7 +88,8 @@ class Item {
      *
      * @param string $properties
      */
-    public function setProperties($properties) {
+    public function setProperties($properties)
+    {
         $this->properties = is_string($properties) ? trim($properties) : null;
     }
 
@@ -89,7 +98,8 @@ class Item {
      *
      * @return void
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         unset($this->id, $this->href, $this->mediaType);
         unset($this->properties, $this->requiredNamespace, $this->requiredModules, $this->fallback, $this->fallbackStyle);
     }
@@ -100,7 +110,8 @@ class Item {
      *
      * @param string $requiredNamespace
      */
-    public function setRequiredNamespace($requiredNamespace) {
+    public function setRequiredNamespace($requiredNamespace)
+    {
         $this->requiredNamespace = is_string($requiredNamespace) ? trim($requiredNamespace) : null;
     }
 
@@ -110,7 +121,8 @@ class Item {
      *
      * @param string $requiredModules
      */
-    public function setRequiredModules($requiredModules) {
+    public function setRequiredModules($requiredModules)
+    {
         $this->requiredModules = is_string($requiredModules) ? trim($requiredModules) : null;
     }
 
@@ -120,7 +132,8 @@ class Item {
      *
      * @param string $fallback
      */
-    public function setfallback($fallback) {
+    public function setfallback($fallback)
+    {
         $this->fallback = is_string($fallback) ? trim($fallback) : null;
     }
 
@@ -130,7 +143,8 @@ class Item {
      *
      * @param string $fallbackStyle
      */
-    public function setFallbackStyle($fallbackStyle) {
+    public function setFallbackStyle($fallbackStyle)
+    {
         $this->fallbackStyle = is_string($fallbackStyle) ? trim($fallbackStyle) : null;
     }
 
@@ -140,7 +154,8 @@ class Item {
      *
      * @return string
      */
-    public function finalize($bookVersion = EPub::BOOK_VERSION_EPUB2) {
+    public function finalize($bookVersion = EPub::BOOK_VERSION_EPUB2)
+    {
         $item = "\t\t<item id=\"" . $this->id . "\" href=\"" . $this->href . "\" media-type=\"" . $this->mediaType . "\" ";
         if ($bookVersion === EPub::BOOK_VERSION_EPUB3 && isset($this->properties)) {
             $item .= "properties=\"" . $this->properties . "\" ";
@@ -164,14 +179,16 @@ class Item {
     /**
      * @return array
      */
-    public function getIndexPoints() {
+    public function getIndexPoints()
+    {
         return $this->indexPoints;
     }
 
     /**
      * @param string $indexPoint
      */
-    public function addIndexPoint($indexPoint) {
+    public function addIndexPoint($indexPoint)
+    {
         $this->indexPoints[] = $indexPoint;
     }
 
@@ -179,21 +196,24 @@ class Item {
      * @param string $indexPoint
      * @return bool
      */
-    public function hasIndexPoint($indexPoint) {
+    public function hasIndexPoint($indexPoint)
+    {
         return in_array($indexPoint, $this->indexPoints);
     }
 
     /**
      * @return null
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
     /**
      * @return null
      */
-    public function getHref() {
+    public function getHref()
+    {
         return $this->href;
     }
 }

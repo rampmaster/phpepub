@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Rampmaster\EPub\Core\Structure\OPF;
 
 /**
@@ -8,7 +11,8 @@ namespace Rampmaster\EPub\Core\Structure\OPF;
  * @copyright 2014- A. Grandt
  * @license   GNU LGPL 2.1
  */
-class Reference {
+class Reference
+{
     /* REFERENCE types are derived from the "Chicago Manual of Style"
      */
 
@@ -90,7 +94,8 @@ class Reference {
      * @param string $title
      * @param string $href
      */
-    public function __construct($type, $title, $href) {
+    public function __construct($type, $title, $href)
+    {
         $this->setType($type);
         $this->setTitle($title);
         $this->setHref($href);
@@ -102,7 +107,8 @@ class Reference {
      *
      * @param string $type
      */
-    public function setType($type) {
+    public function setType($type)
+    {
         $this->type = is_string($type) ? trim($type) : null;
     }
 
@@ -112,7 +118,8 @@ class Reference {
      *
      * @param string $title
      */
-    public function setTitle($title) {
+    public function setTitle($title)
+    {
         $this->title = is_string($title) ? trim($title) : null;
     }
 
@@ -122,7 +129,8 @@ class Reference {
      *
      * @param string $href
      */
-    public function setHref($href) {
+    public function setHref($href)
+    {
         $this->href = is_string($href) ? trim($href) : null;
     }
 
@@ -131,7 +139,8 @@ class Reference {
      *
      * @return void
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         unset($this->type, $this->title, $this->href);
     }
 
@@ -141,7 +150,8 @@ class Reference {
      *
      * @return string
      */
-    public function finalize() {
+    public function finalize()
+    {
         return "\t\t<reference type=\"" . $this->type . "\" title=\"" . $this->title . "\" href=\"" . $this->href . "\" />\n";
     }
 }
